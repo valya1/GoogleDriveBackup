@@ -45,6 +45,7 @@ public class DriveRepository implements IDriveRepository {
                 buffer(inputStream, outputStream);
                 return file;
             }
+            outputStream.close();
             return null;
         });
     }

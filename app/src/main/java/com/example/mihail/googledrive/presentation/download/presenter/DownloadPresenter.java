@@ -4,7 +4,6 @@ import com.example.mihail.googledrive.business.download.interactor.DownloadInter
 import com.example.mihail.googledrive.business.download.interactor.IDownloadInteractor;
 import com.example.mihail.googledrive.presentation.download.DownloadContract;
 import com.example.mihail.googledrive.presentation.recycler_data.model.IFileAdapterModel;
-import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.io.File;
 import java.util.List;

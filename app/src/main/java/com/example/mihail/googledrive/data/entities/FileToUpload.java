@@ -1,7 +1,5 @@
 package com.example.mihail.googledrive.data.entities;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 
 public class FileToUpload
