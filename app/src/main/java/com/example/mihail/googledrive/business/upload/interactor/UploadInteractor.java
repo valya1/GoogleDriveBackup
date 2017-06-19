@@ -5,7 +5,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
 
-import com.example.mihail.googledrive.data.models.FileToUpload;
+import com.example.mihail.googledrive.data.entities.FileToUpload;
 import com.example.mihail.googledrive.data.repository.IDriveRepository;
 
 import java.io.IOException;

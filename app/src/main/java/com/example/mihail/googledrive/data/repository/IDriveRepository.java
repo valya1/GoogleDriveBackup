@@ -1,7 +1,7 @@
 package com.example.mihail.googledrive.data.repository;
 
 
-import com.example.mihail.googledrive.data.models.FileToUpload;
+import com.example.mihail.googledrive.data.entities.FileToUpload;
 import java.io.File;
 import java.util.List;
 

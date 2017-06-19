@@ -1,7 +1,7 @@
 package com.example.mihail.googledrive.data.repository;
 
 import android.os.Environment;
-import com.example.mihail.googledrive.data.models.FileToUpload;
+import com.example.mihail.googledrive.data.entities.FileToUpload;
 import com.example.mihail.googledrive.data.models.GoogleDriveManager;
 import java.io.File;
 import java.io.FileOutputStream;
