@@ -1,10 +1,8 @@
 package com.example.mihail.googledrive.data.models;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
-
-/**
- * Created by mihail on 08.06.2017.
- */
 
 public class FileToUpload
 {

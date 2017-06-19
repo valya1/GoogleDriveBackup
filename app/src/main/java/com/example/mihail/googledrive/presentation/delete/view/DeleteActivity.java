@@ -8,18 +8,20 @@ import android.widget.Toast;
 
 import com.example.mihail.googledrive.BaseActivity;
 import com.example.mihail.googledrive.R;
+import com.example.mihail.googledrive.business.delete.interactor.DeleteInteractor;
+import com.example.mihail.googledrive.data.models.GoogleDriveManager;
+import com.example.mihail.googledrive.data.repository.DriveRepository;
+import com.example.mihail.googledrive.presentation.delete.DeleteContract;
 import com.example.mihail.googledrive.presentation.delete.presenter.DeletePresenter;
-import com.example.mihail.googledrive.presentation.delete.presenter.IDeletePresenter;
 import com.example.mihail.googledrive.presentation.recycler_data.FilesAdapter;
 import com.example.mihail.googledrive.presentation.recycler_data.view.IFileAdapterView;
 
 
-public class DeleteActivity extends BaseActivity implements IDeleteView{
+public class DeleteActivity extends BaseActivity implements DeleteContract.View{
 
-    private FilesAdapter filesAdapter;
     private IFileAdapterView iFileAdapterView;
 
-    private IDeletePresenter iDeletePresenter;
+    private DeleteContract.Presenter iDeletePresenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -31,10 +33,10 @@ public class DeleteActivity extends BaseActivity implements IDeleteView{
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        filesAdapter = new FilesAdapter();
+        FilesAdapter filesAdapter = new FilesAdapter();
         iFileAdapterView = filesAdapter;
 
-        iDeletePresenter = new DeletePresenter(getApiGoogleClient(), filesAdapter);
+        iDeletePresenter = new DeletePresenter(new DeleteInteractor(new DriveRepository(new GoogleDriveManager(getApiGoogleClient()))), filesAdapter);
 
         filesAdapter.setOnClickFileListener((adapter, position) -> iDeletePresenter.deleteFile(position));
 

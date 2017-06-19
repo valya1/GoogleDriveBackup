@@ -1,17 +1,12 @@
 package com.example.mihail.googledrive.business.upload.interactor;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.provider.OpenableColumns;
 
 import com.example.mihail.googledrive.data.models.FileToUpload;
-import com.example.mihail.googledrive.data.repository.DriveRepository;
 import com.example.mihail.googledrive.data.repository.IDriveRepository;
-import com.google.android.gms.common.api.GoogleApiClient;
-
 
 import java.io.IOException;
 
@@ -21,32 +16,29 @@ import io.reactivex.Single;
 public class UploadInteractor implements IUploadInteractor {
 
     private IDriveRepository driveRepository;
+    //TODO Интерактор это изнеслогикак какой Контекст??
     private Context context;
 
-    public UploadInteractor(GoogleApiClient googleApiClient, Context context)
+    public UploadInteractor(IDriveRepository iDriveRepository, Context context)
     {
-        driveRepository = new DriveRepository(googleApiClient);
+        this.driveRepository = iDriveRepository;
         this.context = context;
     }
     @Override
-    public Single<Boolean> uploadFile() {
-        return createFileToUpload()
+    public Single<Boolean> uploadFile(Uri fileUri) {
+        return createFileToUpload(fileUri)
                 .flatMap(driveRepository::uploadFile)
                 .onErrorResumeNext(throwable -> Single.error(new RuntimeException("Unable to upload file")));
     }
 
-    private Single<FileToUpload> createFileToUpload()
+    private Single<FileToUpload> createFileToUpload(Uri fileUri)
     {
         return Single.fromCallable(() -> {
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-            if(preferences.contains("Uri")){
-                Uri uri = Uri.parse(preferences.getString("Uri",null));
-                try {
-                    return new FileToUpload(getTitleFromUri(uri), context.getContentResolver().openInputStream(uri));
-                }
-                catch (IOException e){
-                    e.printStackTrace();
-                }
+            try {
+                return new FileToUpload(getTitleFromUri(fileUri), context.getContentResolver().openInputStream(fileUri));
+            }
+            catch (IOException e){
+                e.printStackTrace();
             }
             return new FileToUpload();
         });
@@ -56,11 +48,8 @@ public class UploadInteractor implements IUploadInteractor {
         String result = null;
         if (uri.getScheme().equals("content")) {
             Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
-            try {
                 if (cursor != null && cursor.moveToFirst()) {
                     result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                }
-            } finally {
                 cursor.close();
             }
         }

@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/GoogleDriveBackup.iml" filepath="$PROJECT_DIR$/GoogleDriveBackup.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/test.iml" filepath="$PROJECT_DIR$/test.iml" />
+      <module fileurl="file://C:\Users\mihail\Desktop\lil\GoogleDriveBackup\test.iml" filepath="C:\Users\mihail\Desktop\lil\GoogleDriveBackup\test.iml" />
     </modules>
   </component>
 </project>

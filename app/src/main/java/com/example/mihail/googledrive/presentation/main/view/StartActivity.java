@@ -4,38 +4,45 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.AppCompatButton;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.mihail.googledrive.BaseActivity;
 import com.example.mihail.googledrive.R;
+import com.example.mihail.googledrive.business.choose_file.interactor.ChooseFileInteractor;
+import com.example.mihail.googledrive.business.upload.interactor.UploadInteractor;
+import com.example.mihail.googledrive.data.models.GoogleDriveManager;
+import com.example.mihail.googledrive.data.repository.DriveRepository;
 import com.example.mihail.googledrive.presentation.delete.view.DeleteActivity;
 import com.example.mihail.googledrive.presentation.download.view.DownloadActivity;
-import com.example.mihail.googledrive.presentation.main.presenter.IMainPresenter;
+import com.example.mihail.googledrive.presentation.main.MainContract;
 import com.example.mihail.googledrive.presentation.main.presenter.MainPresenter;
 
-public class StartActivity extends BaseActivity implements IMainView {
+public class StartActivity extends BaseActivity implements MainContract.View {
 
     public static final int REQUEST_CODE_CHOOSE_FILE = 100;
-    private IMainPresenter iMainPresenter;
+
+    private MainContract.Presenter iMainPresenter;
+
+    private Uri fileUri;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        AppCompatButton chooseFileToDelete;
-        AppCompatButton chooseFileToDownload;
-        AppCompatButton uploadFile;
+        Button chooseFileToDelete;
+        Button chooseFileToDownload;
+        Button uploadFile;
 
         setContentView(R.layout.activity_main);
 
-        iMainPresenter = new MainPresenter(getApiGoogleClient(),this);
+        iMainPresenter = new MainPresenter(new UploadInteractor(new DriveRepository(new GoogleDriveManager(getApiGoogleClient())),this),
+                new ChooseFileInteractor(this));
 
-        chooseFileToDelete = (AppCompatButton) findViewById(R.id.btnToDeleteList);
-        chooseFileToDownload = (AppCompatButton) findViewById(R.id.btnToDownloadList);
-        uploadFile = (AppCompatButton) findViewById(R.id.btnToUpload);
+        chooseFileToDelete = (Button) findViewById(R.id.btnToDeleteList);
+        chooseFileToDownload = (Button) findViewById(R.id.btnToDownloadList);
+        uploadFile = (Button) findViewById(R.id.btnToUpload);
 
         chooseFileToDelete.setOnClickListener(v -> iMainPresenter.clickToDeleteActivity());
         chooseFileToDownload.setOnClickListener(v -> iMainPresenter.clickToDownloadActivity());
@@ -50,8 +57,8 @@ public class StartActivity extends BaseActivity implements IMainView {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onStart() {
+        super.onStart();
         iMainPresenter.bindView(this);
     }
 
@@ -62,7 +69,7 @@ public class StartActivity extends BaseActivity implements IMainView {
 
     @Override
     public void showFilesToDelete() {
-       startActivity(new Intent(this, DeleteActivity.class));
+        startActivity(new Intent(this, DeleteActivity.class));
     }
 
     @Override
@@ -80,6 +87,11 @@ public class StartActivity extends BaseActivity implements IMainView {
         Toast.makeText(this, "FILE UPLOAD FAILED", Toast.LENGTH_LONG).show();
     }
 
+    @Override
+    public Uri getFileUri() {
+        return fileUri;
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -87,12 +99,13 @@ public class StartActivity extends BaseActivity implements IMainView {
         switch (requestCode) {
             case REQUEST_CODE_CHOOSE_FILE:
                 if (resultCode == Activity.RESULT_OK) {
-                    Uri uri = data.getData();
-                    PreferenceManager.getDefaultSharedPreferences(this).edit().putString("Uri", uri.toString()).apply();
+                    iMainPresenter.bindView(this);
+                    fileUri = data.getData();
                     iMainPresenter.uploadFile();
                 }
                 break;
-                default: break;
+            default:
+                break;
         }
     }
 }

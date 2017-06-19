@@ -9,17 +9,19 @@ import android.widget.Toast;
 import com.example.mihail.googledrive.BaseActivity;
 import com.example.mihail.googledrive.R;
 
+import com.example.mihail.googledrive.business.download.interactor.DownloadInteractor;
+import com.example.mihail.googledrive.data.models.GoogleDriveManager;
+import com.example.mihail.googledrive.data.repository.DriveRepository;
+import com.example.mihail.googledrive.presentation.download.DownloadContract;
 import com.example.mihail.googledrive.presentation.download.presenter.DownloadPresenter;
-import com.example.mihail.googledrive.presentation.download.presenter.IDownloadPresenter;
 import com.example.mihail.googledrive.presentation.recycler_data.FilesAdapter;
 import com.example.mihail.googledrive.presentation.recycler_data.view.IFileAdapterView;
 
-public class DownloadActivity extends BaseActivity implements IDownloadView
+public class DownloadActivity extends BaseActivity implements DownloadContract.View
 {
-    private FilesAdapter filesAdapter;
     private IFileAdapterView iFileAdapterView;
 
-    private  IDownloadPresenter iDownloadPresenter;
+    private  DownloadContract.Presenter iDownloadPresenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -28,14 +30,14 @@ public class DownloadActivity extends BaseActivity implements IDownloadView
 
         setContentView(R.layout.recycler_view);
 
-        filesAdapter = new FilesAdapter();
+        FilesAdapter filesAdapter = new FilesAdapter();
 
         iFileAdapterView = filesAdapter;
 
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        iDownloadPresenter = new DownloadPresenter(getApiGoogleClient(), filesAdapter);
+        iDownloadPresenter = new DownloadPresenter(new DownloadInteractor(new DriveRepository(new GoogleDriveManager(getApiGoogleClient()))), filesAdapter);
 
         filesAdapter.setOnClickFileListener(( (adapter, position) -> iDownloadPresenter.downloadFile(position) ));
 
@@ -58,7 +60,7 @@ public class DownloadActivity extends BaseActivity implements IDownloadView
     @Override
     public void refreshFiles()
     {
-       iFileAdapterView.refresh();
+        iFileAdapterView.refresh();
     }
 
     @Override

@@ -2,7 +2,7 @@ package com.example.mihail.googledrive.presentation.download.presenter;
 
 import com.example.mihail.googledrive.business.download.interactor.DownloadInteractor;
 import com.example.mihail.googledrive.business.download.interactor.IDownloadInteractor;
-import com.example.mihail.googledrive.presentation.download.view.IDownloadView;
+import com.example.mihail.googledrive.presentation.download.DownloadContract;
 import com.example.mihail.googledrive.presentation.recycler_data.model.IFileAdapterModel;
 import com.google.android.gms.common.api.GoogleApiClient;
 
@@ -15,23 +15,23 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 
-public class DownloadPresenter implements IDownloadPresenter {
+public class DownloadPresenter implements DownloadContract.Presenter {
 
-    private IDownloadView iDownloadView;
+    private DownloadContract.View iDownloadView;
     private IDownloadInteractor iDownloadInteractor;
     private IFileAdapterModel iFileAdapterModel;
     private CompositeDisposable compositeDisposable;
 
 
-    public DownloadPresenter(GoogleApiClient googleApiClient, IFileAdapterModel iFileAdapterModel)
+    public DownloadPresenter(DownloadInteractor iDownloadInteractor, IFileAdapterModel iFileAdapterModel)
     {
-        this.iDownloadInteractor = new DownloadInteractor(googleApiClient);
+        this.iDownloadInteractor = iDownloadInteractor;
         this.iFileAdapterModel = iFileAdapterModel;
         this.compositeDisposable = new CompositeDisposable();
     }
 
     @Override
-    public void bindView(IDownloadView iDownloadView) {
+    public void bindView(DownloadContract.View iDownloadView) {
         this.iDownloadView = iDownloadView;
     }
 
@@ -43,27 +43,27 @@ public class DownloadPresenter implements IDownloadPresenter {
 
     @Override
     public void provideData() {
-       compositeDisposable.add(iDownloadInteractor.getFilesList()
-               .toObservable()
-               .subscribeOn(Schedulers.io())
-               .observeOn(AndroidSchedulers.mainThread())
-               .subscribeWith(new DisposableObserver<List<String>>() {
-                   @Override
-                   public void onNext(@NonNull List<String> list) {
-                       iFileAdapterModel.update(list);
-                       iDownloadView.refreshFiles();
-                   }
+        compositeDisposable.add(iDownloadInteractor.getFilesList()
+                .toObservable()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<List<String>>() {
+                    @Override
+                    public void onNext(@NonNull List<String> list) {
+                        iFileAdapterModel.update(list);
+                        iDownloadView.refreshFiles();
+                    }
 
-                   @Override
-                   public void onError(@NonNull Throwable e) {
+                    @Override
+                    public void onError(@NonNull Throwable e) {
 
-                   }
+                    }
 
-                   @Override
-                   public void onComplete() {
+                    @Override
+                    public void onComplete() {
 
-                   }
-               }));
+                    }
+                }));
     }
 
     @Override

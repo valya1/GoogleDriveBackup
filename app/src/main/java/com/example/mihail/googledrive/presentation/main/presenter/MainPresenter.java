@@ -1,14 +1,9 @@
 package com.example.mihail.googledrive.presentation.main.presenter;
 
-import android.content.Context;
 
-import com.example.mihail.googledrive.business.choose_file.interactor.ChooseFileInteractor;
 import com.example.mihail.googledrive.business.choose_file.interactor.IChooseFileInteractor;
 import com.example.mihail.googledrive.business.upload.interactor.IUploadInteractor;
-import com.example.mihail.googledrive.business.upload.interactor.UploadInteractor;
-import com.example.mihail.googledrive.presentation.main.view.IMainView;
-import com.google.android.gms.common.api.GoogleApiClient;
-
+import com.example.mihail.googledrive.presentation.main.MainContract;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
@@ -16,23 +11,24 @@ import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 
 
-public class MainPresenter implements IMainPresenter
+public class MainPresenter implements MainContract.Presenter
 {
-    private IMainView iMainView;
+    private MainContract.View iMainView;
     private IUploadInteractor iUploadInteractor;
     private IChooseFileInteractor iChooseFileInteractor;
     private CompositeDisposable compositeDisposable;
 
-    public MainPresenter(GoogleApiClient googleApiClient, Context context)
+
+    public MainPresenter(IUploadInteractor iUploadInteractor, IChooseFileInteractor iChooseFileInteractor)
     {
-        this.iUploadInteractor = new UploadInteractor(googleApiClient, context);
-        this.iChooseFileInteractor = new ChooseFileInteractor(context);
+        this.iUploadInteractor = iUploadInteractor;
+        this.iChooseFileInteractor = iChooseFileInteractor;
         this.compositeDisposable = new CompositeDisposable();
     }
 
 
     @Override
-    public void bindView(IMainView iMainView)
+    public void bindView(MainContract.View iMainView)
     {
         this.iMainView = iMainView;
     }
@@ -70,7 +66,7 @@ public class MainPresenter implements IMainPresenter
 
     @Override
     public void uploadFile() {
-        compositeDisposable.add(iUploadInteractor.uploadFile()
+        compositeDisposable.add(iUploadInteractor.uploadFile(iMainView.getFileUri())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .toObservable()
@@ -95,3 +91,4 @@ public class MainPresenter implements IMainPresenter
                 }));
     }
 }
+

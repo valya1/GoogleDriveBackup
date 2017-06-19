@@ -1,10 +1,6 @@
 package com.example.mihail.googledrive.business.download.interactor;
 
-import com.example.mihail.googledrive.data.repository.DriveRepository;
 import com.example.mihail.googledrive.data.repository.IDriveRepository;
-import com.google.android.gms.common.api.GoogleApiClient;
-
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +13,9 @@ public class DownloadInteractor implements IDownloadInteractor {
 
     private IDriveRepository iDriveRepository;
 
-    public DownloadInteractor(GoogleApiClient googleApiClient)
+    public DownloadInteractor(IDriveRepository iDriveRepository)
     {
-        iDriveRepository = new DriveRepository(googleApiClient);
+        this.iDriveRepository = iDriveRepository;
     }
 
     @Override
@@ -30,7 +26,7 @@ public class DownloadInteractor implements IDownloadInteractor {
 
     @Override
     public Single<File> downloadFile(String fileName) {
-            return iDriveRepository.downloadFile(fileName)
-            .onErrorResumeNext(throwable -> Single.error(new RuntimeException("Error while downloading file")));
+        return iDriveRepository.downloadFile(fileName)
+                .onErrorResumeNext(throwable -> Single.error(new RuntimeException("Error while downloading file")));
     }
 }

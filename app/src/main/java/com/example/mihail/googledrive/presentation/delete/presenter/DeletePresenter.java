@@ -2,10 +2,8 @@ package com.example.mihail.googledrive.presentation.delete.presenter;
 
 import com.example.mihail.googledrive.business.delete.interactor.DeleteInteractor;
 import com.example.mihail.googledrive.business.delete.interactor.IDeleteInteractor;
-import com.example.mihail.googledrive.presentation.delete.view.IDeleteView;
+import com.example.mihail.googledrive.presentation.delete.DeleteContract;
 import com.example.mihail.googledrive.presentation.recycler_data.model.IFileAdapterModel;
-import com.google.android.gms.common.api.GoogleApiClient;
-
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -16,22 +14,22 @@ import io.reactivex.schedulers.Schedulers;
 
 
 
-public class DeletePresenter implements IDeletePresenter {
+public class DeletePresenter implements DeleteContract.Presenter {
 
-   private IDeleteInteractor iDeleteInteractor;
-   private IFileAdapterModel iFileAdapterModel;
-   private IDeleteView iDeleteView;
+    private IDeleteInteractor iDeleteInteractor;
+    private IFileAdapterModel iFileAdapterModel;
+    private DeleteContract.View iDeleteView;
 
-   private CompositeDisposable compositeDisposable;
+    private CompositeDisposable compositeDisposable;
 
-    public DeletePresenter(GoogleApiClient googleApiClient, IFileAdapterModel iFileAdapterModel)
+    public DeletePresenter(DeleteInteractor deleteInteractor, IFileAdapterModel iFileAdapterModel)
     {
-        this.iDeleteInteractor = new DeleteInteractor(googleApiClient);
+        this.iDeleteInteractor = deleteInteractor;
         this.iFileAdapterModel = iFileAdapterModel;
         compositeDisposable = new CompositeDisposable();
     }
     @Override
-    public void bindView(IDeleteView iDeleteView) {
+    public void bindView(DeleteContract.View iDeleteView) {
         this.iDeleteView = iDeleteView;
     }
 

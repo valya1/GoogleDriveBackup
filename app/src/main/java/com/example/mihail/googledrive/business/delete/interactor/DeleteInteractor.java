@@ -1,8 +1,6 @@
 package com.example.mihail.googledrive.business.delete.interactor;
 
-import com.example.mihail.googledrive.data.repository.DriveRepository;
 import com.example.mihail.googledrive.data.repository.IDriveRepository;
-import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +12,9 @@ public class DeleteInteractor implements IDeleteInteractor {
 
     private IDriveRepository iDriveRepository;
 
-    public DeleteInteractor(GoogleApiClient googleApiClient)
+    public DeleteInteractor(IDriveRepository iDriveRepository)
     {
-        this.iDriveRepository = new DriveRepository(googleApiClient);
+        this.iDriveRepository = iDriveRepository;
     }
     @Override
     public Single<List<String>> getFilesList() {
