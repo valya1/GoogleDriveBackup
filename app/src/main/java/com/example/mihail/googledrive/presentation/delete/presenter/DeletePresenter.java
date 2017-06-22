@@ -4,7 +4,6 @@ import com.example.mihail.googledrive.business.delete.interactor.IDeleteInteract
 import com.example.mihail.googledrive.presentation.delete.DeleteContract;
 import com.example.mihail.googledrive.presentation.recycler_data.model.IFileAdapterModel;
 import java.util.List;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.observers.DisposableSingleObserver;

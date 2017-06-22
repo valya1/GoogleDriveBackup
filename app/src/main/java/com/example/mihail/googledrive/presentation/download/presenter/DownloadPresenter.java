@@ -7,7 +7,6 @@ import com.example.mihail.googledrive.presentation.recycler_data.model.IFileAdap
 
 import java.io.File;
 import java.util.List;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.observers.DisposableSingleObserver;
