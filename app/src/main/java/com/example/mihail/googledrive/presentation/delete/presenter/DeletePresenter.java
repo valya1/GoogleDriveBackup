@@ -7,7 +7,6 @@ import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableSingleObserver;
 
 
@@ -17,13 +16,10 @@ public class DeletePresenter implements DeleteContract.Presenter {
     private IFileAdapterModel mFileAdapterModel;
     private DeleteContract.View mDeleteView;
 
-    private CompositeDisposable compositeDisposable;
-
     public DeletePresenter(IDeleteInteractor iDeleteInteractor, IFileAdapterModel iFileAdapterModel)
     {
         this.mDeleteInteractor = iDeleteInteractor;
         this.mFileAdapterModel = iFileAdapterModel;
-        compositeDisposable = new CompositeDisposable();
     }
     @Override
     public void bindView(DeleteContract.View iDeleteView) {
@@ -33,14 +29,13 @@ public class DeletePresenter implements DeleteContract.Presenter {
     @Override
     public void unbindView() {
         mDeleteView = null;
-        compositeDisposable.clear();
     }
 
     @Override
     public void provideData() {
-        compositeDisposable.add(mDeleteInteractor.getFilesList()
+        mDeleteInteractor.getFilesList()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<List<String>>() {
+                .subscribe(new DisposableSingleObserver<List<String>>() {
                     @Override
                     public void onSuccess(List<String> list) {
                         if(mFileAdapterModel!=null)
@@ -54,15 +49,15 @@ public class DeletePresenter implements DeleteContract.Presenter {
                         if(mDeleteView!=null)
                             mDeleteView.showErrorMessage(e.getMessage());
                     }
-                }));
+                });
     }
 
     @Override
     public void deleteFile(int position) {
-        compositeDisposable.add(mDeleteInteractor
+            mDeleteInteractor
                 .deleteFile(mFileAdapterModel.getFileName(position))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<Boolean>() {
+                .subscribe(new DisposableSingleObserver<Boolean>() {
 
                     @Override
                     public void onSuccess(Boolean result) {
@@ -80,7 +75,6 @@ public class DeletePresenter implements DeleteContract.Presenter {
                     public void onError(@NonNull Throwable e) {
 
                     }
-                })
-        );
+                });
     }
 }

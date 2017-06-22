@@ -10,9 +10,7 @@ import com.example.mihail.googledrive.presentation.main.MainContract;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableSingleObserver;
-import io.reactivex.schedulers.Schedulers;
 
 
 public class MainPresenter implements MainContract.Presenter
@@ -20,14 +18,11 @@ public class MainPresenter implements MainContract.Presenter
     private MainContract.View mMainView;
     private IUploadInteractor mUploadInteractor;
     private IChooseFileInteractor mChooseFileInteractor;
-    private CompositeDisposable mCompositeDisposable;
-
 
     public MainPresenter(IUploadInteractor iUploadInteractor, IChooseFileInteractor iChooseFileInteractor)
     {
         this.mUploadInteractor = iUploadInteractor;
         this.mChooseFileInteractor = iChooseFileInteractor;
-        this.mCompositeDisposable = new CompositeDisposable();
     }
 
 
@@ -41,7 +36,6 @@ public class MainPresenter implements MainContract.Presenter
     public void unbindView()
     {
         mMainView = null;
-        mCompositeDisposable.clear();
     }
 
     @Override
@@ -65,9 +59,9 @@ public class MainPresenter implements MainContract.Presenter
     @Override
     public void chooseFile()
     {
-        mCompositeDisposable.add(mChooseFileInteractor.chooseFile()
+        mChooseFileInteractor.chooseFile()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<Intent>() {
+                .subscribe(new DisposableSingleObserver<Intent>() {
                     @Override
                     public void onSuccess(Intent intent) {
                         if(mMainView!=null) mMainView.chooseFileActivity(intent);
@@ -77,15 +71,14 @@ public class MainPresenter implements MainContract.Presenter
                     public void onError(Throwable e) {
                         if(mMainView!=null) mMainView.showErrorMessage(e.getMessage());
                     }
-                })
-                );
+                });
     }
 
     @Override
     public void uploadFile(Uri uri) {
-        mCompositeDisposable.add(mUploadInteractor.uploadFile(uri)
+                mUploadInteractor.uploadFile(uri)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<Boolean>() {
+                .subscribe(new DisposableSingleObserver<Boolean>() {
                     @Override
                     public void onSuccess(Boolean result) {
                         if(mMainView!=null) {
@@ -99,7 +92,7 @@ public class MainPresenter implements MainContract.Presenter
                     @Override
                     public void onError(@NonNull Throwable e) {
                     }
-                }));
+                });
     }
 }
 

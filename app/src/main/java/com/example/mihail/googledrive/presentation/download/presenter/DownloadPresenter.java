@@ -10,22 +10,18 @@ import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableSingleObserver;
-import io.reactivex.schedulers.Schedulers;
 
 public class DownloadPresenter implements DownloadContract.Presenter {
 
     private DownloadContract.View mDownloadView;
     private IDownloadInteractor mDownloadInteractor;
     private IFileAdapterModel mFileAdapterModel;
-    private CompositeDisposable mCompositeDisposable;
 
     public DownloadPresenter(DownloadInteractor iDownloadInteractor, IFileAdapterModel iFileAdapterModel)
     {
         this.mDownloadInteractor = iDownloadInteractor;
         this.mFileAdapterModel = iFileAdapterModel;
-        this.mCompositeDisposable = new CompositeDisposable();
     }
 
     @Override
@@ -36,14 +32,13 @@ public class DownloadPresenter implements DownloadContract.Presenter {
     @Override
     public void unbindView() {
         mDownloadView = null;
-        mCompositeDisposable.clear();
     }
 
     @Override
     public void provideData() {
-        mCompositeDisposable.add(mDownloadInteractor.getFilesList()
+        mDownloadInteractor.getFilesList()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<List<String>>() {
+                .subscribe(new DisposableSingleObserver<List<String>>() {
                     @Override
                     public void onSuccess(List<String> list) {
                         mFileAdapterModel.update(list);
@@ -54,15 +49,15 @@ public class DownloadPresenter implements DownloadContract.Presenter {
                     public void onError(@NonNull Throwable e) {
                         mDownloadView.showErrorMessage(e.getMessage());
                     }
-                }));
+                });
     }
 
     @Override
     public void downloadFile(int position) {
-        mCompositeDisposable.add(mDownloadInteractor
+        mDownloadInteractor
                 .downloadFile(mFileAdapterModel.getFileName(position))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<File>() {
+                .subscribe(new DisposableSingleObserver<File>() {
                     @Override
                     public void onSuccess(File file) {
                         if(mDownloadView!=null) mDownloadView.showSuccessMessage(file.getAbsolutePath());
@@ -72,7 +67,6 @@ public class DownloadPresenter implements DownloadContract.Presenter {
                     public void onError(@NonNull Throwable e) {
                         if(mDownloadView!=null) mDownloadView.showErrorMessage(e.getMessage());
                     }
-                })
-        );
+                });
     }
 }
