@@ -11,79 +11,66 @@ import java.util.List;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.observers.DisposableObserver;
+import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
 public class DownloadPresenter implements DownloadContract.Presenter {
 
-    private DownloadContract.View iDownloadView;
-    private IDownloadInteractor iDownloadInteractor;
-    private IFileAdapterModel iFileAdapterModel;
-    private CompositeDisposable compositeDisposable;
-
+    private DownloadContract.View mDownloadView;
+    private IDownloadInteractor mDownloadInteractor;
+    private IFileAdapterModel mFileAdapterModel;
+    private CompositeDisposable mCompositeDisposable;
 
     public DownloadPresenter(DownloadInteractor iDownloadInteractor, IFileAdapterModel iFileAdapterModel)
     {
-        this.iDownloadInteractor = iDownloadInteractor;
-        this.iFileAdapterModel = iFileAdapterModel;
-        this.compositeDisposable = new CompositeDisposable();
+        this.mDownloadInteractor = iDownloadInteractor;
+        this.mFileAdapterModel = iFileAdapterModel;
+        this.mCompositeDisposable = new CompositeDisposable();
     }
 
     @Override
     public void bindView(DownloadContract.View iDownloadView) {
-        this.iDownloadView = iDownloadView;
+        this.mDownloadView = iDownloadView;
     }
 
     @Override
     public void unbindView() {
-        iDownloadView = null;
-        compositeDisposable.clear();
+        mDownloadView = null;
+        mCompositeDisposable.clear();
     }
 
     @Override
     public void provideData() {
-        compositeDisposable.add(iDownloadInteractor.getFilesList()
-                .toObservable()
-                .subscribeOn(Schedulers.io())
+        mCompositeDisposable.add(mDownloadInteractor.getFilesList()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableObserver<List<String>>() {
+                .subscribeWith(new DisposableSingleObserver<List<String>>() {
                     @Override
-                    public void onNext(@NonNull List<String> list) {
-                        iFileAdapterModel.update(list);
-                        iDownloadView.refreshFiles();
+                    public void onSuccess(List<String> list) {
+                        mFileAdapterModel.update(list);
+                        mDownloadView.refreshFiles();
                     }
 
                     @Override
                     public void onError(@NonNull Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
+                        mDownloadView.showErrorMessage(e.getMessage());
                     }
                 }));
     }
 
     @Override
     public void downloadFile(int position) {
-        compositeDisposable.add(iDownloadInteractor
-                .downloadFile(iFileAdapterModel.getFileName(position))
-                .toObservable()
-                .subscribeOn(Schedulers.io())
+        mCompositeDisposable.add(mDownloadInteractor
+                .downloadFile(mFileAdapterModel.getFileName(position))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableObserver<File>() {
+                .subscribeWith(new DisposableSingleObserver<File>() {
                     @Override
-                    public void onNext(@NonNull File file) {
-                        iDownloadView.showSuccessMessage(file.getAbsolutePath());
-                    }
-                    @Override
-                    public void onError(@NonNull Throwable e) {
-                        iDownloadView.showErrorMessage();
+                    public void onSuccess(File file) {
+                        if(mDownloadView!=null) mDownloadView.showSuccessMessage(file.getAbsolutePath());
                     }
 
                     @Override
-                    public void onComplete() {
+                    public void onError(@NonNull Throwable e) {
+                        if(mDownloadView!=null) mDownloadView.showErrorMessage(e.getMessage());
                     }
                 })
         );

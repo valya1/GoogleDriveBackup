@@ -19,9 +19,9 @@ import com.example.mihail.googledrive.presentation.recycler_data.view.IFileAdapt
 
 public class DeleteActivity extends BaseActivity implements DeleteContract.View{
 
-    private IFileAdapterView iFileAdapterView;
+    private IFileAdapterView mFileAdapterView;
 
-    private DeleteContract.Presenter iDeletePresenter;
+    private DeleteContract.Presenter mDeletePresenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -34,11 +34,11 @@ public class DeleteActivity extends BaseActivity implements DeleteContract.View{
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         FilesAdapter filesAdapter = new FilesAdapter();
-        iFileAdapterView = filesAdapter;
+        mFileAdapterView = filesAdapter;
 
-        iDeletePresenter = new DeletePresenter(new DeleteInteractor(new DriveRepository(new GoogleDriveManager(getApiGoogleClient()))), filesAdapter);
+        mDeletePresenter = new DeletePresenter(new DeleteInteractor(new DriveRepository(new GoogleDriveManager(getApiGoogleClient()))), filesAdapter);
 
-        filesAdapter.setOnClickFileListener((adapter, position) -> iDeletePresenter.deleteFile(position));
+        filesAdapter.setOnClickFileListener((adapter, position) -> mDeletePresenter.deleteFile(position));
 
         recyclerView.setAdapter(filesAdapter);
 
@@ -47,33 +47,29 @@ public class DeleteActivity extends BaseActivity implements DeleteContract.View{
     @Override
     protected void onStop() {
         super.onStop();
-        iDeletePresenter.unbindView();
+        mDeletePresenter.unbindView();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        iDeletePresenter.bindView(this);
+        mDeletePresenter.bindView(this);
     }
 
-    @Override
-    public void showSuccessMessage() {
-        Toast.makeText(this, "File was deleted successfully", Toast.LENGTH_LONG).show();
-    }
 
     @Override
     public void refreshFileList() {
-        iFileAdapterView.refresh();
+        mFileAdapterView.refresh();
     }
 
     @Override
-    public void showErrorMessage() {
-        Toast.makeText(this,"Error while file deleting", Toast.LENGTH_LONG).show();
+    public void showErrorMessage(String message) {
+        Toast.makeText(this,message, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         super.onConnected(bundle);
-        iDeletePresenter.provideData();
+        mDeletePresenter.provideData();
     }
 }

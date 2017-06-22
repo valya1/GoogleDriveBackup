@@ -4,31 +4,30 @@ import java.io.InputStream;
 
 public class FileToUpload
 {
-    private String title;
+    private String mTitle;
+    private InputStream mFileInputStream;
 
     public FileToUpload() {
     }
 
-    private InputStream fileInputStream;
-
     public FileToUpload(String title, InputStream fileInputStream) {
-        this.title = title;
-        this.fileInputStream = fileInputStream;
+        this.mTitle = title;
+        this.mFileInputStream = fileInputStream;
     }
 
     public String getTitle() {
-        return title;
+        return mTitle;
     }
 
     public void setTitle(String title) {
-        this.title = title;
+        this.mTitle = title;
     }
 
     public InputStream getFileInputStream() {
-        return fileInputStream;
+        return mFileInputStream;
     }
 
-    public void setFileInputStream(InputStream fileInputStream) {
-        this.fileInputStream = fileInputStream;
+    public void setFileInputStream(InputStream mFileInputStream) {
+        this.mFileInputStream = mFileInputStream;
     }
 }

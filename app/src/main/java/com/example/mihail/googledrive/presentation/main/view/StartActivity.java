@@ -2,11 +2,9 @@ package com.example.mihail.googledrive.presentation.main.view;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.widget.Button;
-import android.widget.Toast;
+import android.view.View;
 
 import com.example.mihail.googledrive.BaseActivity;
 import com.example.mihail.googledrive.R;
@@ -19,47 +17,59 @@ import com.example.mihail.googledrive.presentation.download.view.DownloadActivit
 import com.example.mihail.googledrive.presentation.main.MainContract;
 import com.example.mihail.googledrive.presentation.main.presenter.MainPresenter;
 
+
 public class StartActivity extends BaseActivity implements MainContract.View {
 
     public static final int REQUEST_CODE_CHOOSE_FILE = 100;
-
-    private MainContract.Presenter iMainPresenter;
-
-    private Uri fileUri;
+    private MainContract.Presenter mMainPresenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Button chooseFileToDelete;
-        Button chooseFileToDownload;
-        Button uploadFile;
+        View chooseFileToDelete;
+        View chooseFileToDownload;
+        View uploadFile;
 
         setContentView(R.layout.activity_main);
 
-        iMainPresenter = new MainPresenter(new UploadInteractor(new DriveRepository(new GoogleDriveManager(getApiGoogleClient())),this),
-                new ChooseFileInteractor(this));
+        mMainPresenter = new MainPresenter(new UploadInteractor(new DriveRepository(new GoogleDriveManager(getApiGoogleClient()))
+                ,getContentResolver()),
+                new ChooseFileInteractor());
 
-        chooseFileToDelete = (Button) findViewById(R.id.btnToDeleteList);
-        chooseFileToDownload = (Button) findViewById(R.id.btnToDownloadList);
-        uploadFile = (Button) findViewById(R.id.btnToUpload);
+        chooseFileToDelete = findViewById(R.id.btnToDeleteList);
+        chooseFileToDownload = findViewById(R.id.btnToDownloadList);
+        uploadFile = findViewById(R.id.btnToUpload);
 
-        chooseFileToDelete.setOnClickListener(v -> iMainPresenter.clickToDeleteActivity());
-        chooseFileToDownload.setOnClickListener(v -> iMainPresenter.clickToDownloadActivity());
-        uploadFile.setOnClickListener(v -> iMainPresenter.clickToUploadFile());
+        View.OnClickListener onClickListener = v -> {
+                switch (v.getId()){
+                    case R.id.btnToDeleteList:
+                        mMainPresenter.clickToDeleteActivity();
+                        break;
+                    case R.id.btnToDownloadList:
+                        mMainPresenter.clickToDownloadActivity();
+                        break;
+                    case R.id.btnToUpload:
+                        mMainPresenter.clickToUploadFile();
+                }
+            };
+
+        chooseFileToDelete.setOnClickListener(onClickListener);
+        chooseFileToDownload.setOnClickListener(onClickListener);
+        uploadFile.setOnClickListener(onClickListener);
 
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        iMainPresenter.unbindView();
+        mMainPresenter.unbindView();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        iMainPresenter.bindView(this);
+        mMainPresenter.bindView(this);
     }
 
     @Override
@@ -74,24 +84,13 @@ public class StartActivity extends BaseActivity implements MainContract.View {
 
     @Override
     public void startUploadFileAction() {
-        iMainPresenter.chooseFile();
+        mMainPresenter.chooseFile();
     }
 
     @Override
-    public void showSuccessMessage() {
-        Toast.makeText(this, "File upload succeeded!!!", Toast.LENGTH_LONG).show();
+    public void chooseFileActivity(Intent intent){
+        startActivityForResult(intent, REQUEST_CODE_CHOOSE_FILE);
     }
-
-    @Override
-    public void showErrorMessage() {
-        Toast.makeText(this, "FILE UPLOAD FAILED", Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public Uri getFileUri() {
-        return fileUri;
-    }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -99,9 +98,7 @@ public class StartActivity extends BaseActivity implements MainContract.View {
         switch (requestCode) {
             case REQUEST_CODE_CHOOSE_FILE:
                 if (resultCode == Activity.RESULT_OK) {
-                    iMainPresenter.bindView(this);
-                    fileUri = data.getData();
-                    iMainPresenter.uploadFile();
+                    mMainPresenter.uploadFile(data.getData());
                 }
                 break;
             default:

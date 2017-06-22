@@ -14,10 +14,10 @@ import io.reactivex.annotations.Nullable;
 
 public class DriveRepository implements IDriveRepository {
 
-    private GoogleDriveManager googleDriveManager;
+    private GoogleDriveManager mGoogleDriveManager;
 
     public DriveRepository(GoogleDriveManager googleDriveManager){
-        this.googleDriveManager = googleDriveManager;
+        this.mGoogleDriveManager = googleDriveManager;
     }
 
     @Override
@@ -26,9 +26,10 @@ public class DriveRepository implements IDriveRepository {
         return Single.fromCallable(() ->
         {
             InputStream inputStream = fileToUpload.getFileInputStream();
-            OutputStream outputStream = googleDriveManager.getOutputStream();
+            OutputStream outputStream = mGoogleDriveManager.getOutputStream();
             buffer(inputStream,outputStream);
-            return googleDriveManager.saveToDrive(fileToUpload.getTitle());
+            outputStream.close();
+            return mGoogleDriveManager.saveToDrive(fileToUpload.getTitle());
         });
     }
 
@@ -40,7 +41,7 @@ public class DriveRepository implements IDriveRepository {
             File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                     + "/" + fileName);
             OutputStream outputStream = new FileOutputStream(file);
-            InputStream inputStream = googleDriveManager.getInputStream(fileName);
+            InputStream inputStream = mGoogleDriveManager.getInputStream(fileName);
             if(inputStream != null) {
                 buffer(inputStream, outputStream);
                 return file;
@@ -53,13 +54,13 @@ public class DriveRepository implements IDriveRepository {
     @Override
     @Nullable
     public Single<Boolean> deleteFile(String fileName) {
-        return Single.fromCallable(() -> googleDriveManager.deleteFile(fileName));
+        return Single.fromCallable(() -> mGoogleDriveManager.deleteFile(fileName));
     }
 
     @Override
     @Nullable
     public Single<List<String>> getFilesList() {
-        return Single.fromCallable(() ->  googleDriveManager.getFilesList());
+        return Single.fromCallable(() -> mGoogleDriveManager.getFilesList());
     }
 
     private void buffer(InputStream inputStream, OutputStream outputStream) throws IOException{
@@ -71,7 +72,6 @@ public class DriveRepository implements IDriveRepository {
             outputStream.write(buffer,0,bufferSize);
             bufferSize = Math.min(inputStream.available(), maxBufferSize);
         }
-        outputStream.close();
     }
 }
 

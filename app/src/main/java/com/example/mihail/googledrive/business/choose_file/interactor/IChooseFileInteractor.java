@@ -1,10 +1,12 @@
 package com.example.mihail.googledrive.business.choose_file.interactor;
 
-/**
- * Created by mihail on 08.06.2017.
- */
+import android.content.Intent;
+
+import io.reactivex.Single;
+
+
 
 public interface IChooseFileInteractor {
 
-        void chooseFile();
+        Single<Intent> chooseFile();
 }

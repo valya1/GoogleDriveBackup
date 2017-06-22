@@ -2,29 +2,31 @@ package com.example.mihail.googledrive.business.delete.interactor;
 
 import com.example.mihail.googledrive.data.repository.IDriveRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 
 
 public class DeleteInteractor implements IDeleteInteractor {
 
-    private IDriveRepository iDriveRepository;
+    private IDriveRepository mDriveRepository;
 
-    public DeleteInteractor(IDriveRepository iDriveRepository)
+    public DeleteInteractor(IDriveRepository driveRepository)
     {
-        this.iDriveRepository = iDriveRepository;
+        this.mDriveRepository = driveRepository;
     }
     @Override
     public Single<List<String>> getFilesList() {
-        return iDriveRepository.getFilesList()
-                .onErrorReturn(throwable -> new ArrayList<>());
+        return mDriveRepository.getFilesList()
+                .onErrorResumeNext(throwable -> Single.error(new RuntimeException("Unable to get files list")))
+                .subscribeOn(Schedulers.io());
     }
 
     @Override
     public Single<Boolean> deleteFile(String fileName) {
-        return iDriveRepository.deleteFile(fileName)
-                .onErrorReturn(throwable -> false);
+        return mDriveRepository.deleteFile(fileName)
+                .onErrorReturn(throwable -> false)
+                .subscribeOn(Schedulers.io());
     }
 }

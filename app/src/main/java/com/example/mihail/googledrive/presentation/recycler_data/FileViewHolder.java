@@ -9,10 +9,10 @@ import com.example.mihail.googledrive.R;
 
 public class FileViewHolder extends RecyclerView.ViewHolder {
 
-   public final TextView fileName;
+   public final TextView mFileName;
 
     public FileViewHolder(View itemView) {
         super(itemView);
-        fileName = (TextView) itemView.findViewById(R.id.tvFileName);
+        mFileName = (TextView) itemView.findViewById(R.id.tvFileName);
     }
 }

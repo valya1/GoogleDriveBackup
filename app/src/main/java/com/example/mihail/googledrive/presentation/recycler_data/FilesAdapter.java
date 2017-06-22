@@ -13,13 +13,13 @@ import java.util.List;
 
 public class FilesAdapter extends RecyclerView.Adapter<FileViewHolder> implements IFileAdapterModel, IFileAdapterView {
 
-    private List<String> filesList;
-    private OnRecyclerItemClickListener onClickFileListener;
+    private List<String> mFilesList;
+    private OnRecyclerItemClickListener mOnClickFileListener;
 
 
     public FilesAdapter() {
         super();
-        filesList = new ArrayList<>();
+        mFilesList = new ArrayList<>();
     }
 
 
@@ -31,22 +31,22 @@ public class FilesAdapter extends RecyclerView.Adapter<FileViewHolder> implement
 
     @Override
     public void onBindViewHolder(FileViewHolder holder, int position) {
-        String s = filesList.get(position);
-        holder.fileName.setText(filesList.get(position));
+        String s = mFilesList.get(position);
+        holder.mFileName.setText(mFilesList.get(position));
         holder.itemView.setOnClickListener(v -> {
-            if (onClickFileListener != null)
-                onClickFileListener.onItemClick(this, position);
+            if (mOnClickFileListener != null)
+                mOnClickFileListener.onItemClick(this, position);
         });
     }
 
     public void setOnClickFileListener(OnRecyclerItemClickListener onClickFileListener)
     {
-        this.onClickFileListener = onClickFileListener;
+        this.mOnClickFileListener = onClickFileListener;
     }
 
     @Override
     public int getItemCount() {
-        return filesList.size();
+        return mFilesList.size();
     }
 
     @Override
@@ -56,23 +56,23 @@ public class FilesAdapter extends RecyclerView.Adapter<FileViewHolder> implement
 
     @Override
     public void add(String fileName) {
-        filesList.add(fileName);
+        mFilesList.add(fileName);
     }
 
     @Override
     public void update(List<String> fileNames) {
-        filesList.clear();
-        filesList.addAll(fileNames);
+        mFilesList.clear();
+        mFilesList.addAll(fileNames);
     }
 
     @Override
     public String remove(int position) {
-        return filesList.remove(position);
+        return mFilesList.remove(position);
     }
 
     @Override
     public String getFileName(int position) {
-        return filesList.get(position);
+        return mFilesList.get(position);
     }
 
     @Override

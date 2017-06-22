@@ -1,15 +1,13 @@
 package com.example.mihail.googledrive.presentation.download;
 
 import com.example.mihail.googledrive.BasePresenter;
+import com.example.mihail.googledrive.BaseView;
 
 public interface DownloadContract {
 
-    interface View {
+    interface View extends BaseView{
 
         void refreshFiles();
-
-        void showSuccessMessage(String result);
-        void showErrorMessage();
 
     }
 

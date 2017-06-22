@@ -20,12 +20,12 @@ import java.util.List;
 
 public class GoogleDriveManager {
 
-    private GoogleApiClient googleApiClient;
+    private GoogleApiClient mGoogleApiClient;
 
-    private DriveContents driveContents;
+    private DriveContents mDriveContents;
 
     public GoogleDriveManager(GoogleApiClient googleApiClient) {
-        this.googleApiClient = googleApiClient;
+        this.mGoogleApiClient = googleApiClient;
         if(googleApiClient.isConnected())
             Drive.DriveApi.requestSync(googleApiClient).await();
     }
@@ -38,7 +38,7 @@ public class GoogleDriveManager {
                     .get(0)
                     .getDriveId()
                     .asDriveFile()
-                    .delete(googleApiClient)
+                    .delete(mGoogleApiClient)
                     .await()
                     .getStatus()
                     .isSuccess();
@@ -49,26 +49,26 @@ public class GoogleDriveManager {
     public OutputStream getOutputStream(){
 
         DriveApi.DriveContentsResult contentsResult = Drive.DriveApi
-                .newDriveContents(googleApiClient)
+                .newDriveContents(mGoogleApiClient)
                 .await();
         if (contentsResult.getStatus().isSuccess()) {
-            driveContents = contentsResult.getDriveContents();
+            mDriveContents = contentsResult.getDriveContents();
             return contentsResult.getDriveContents().getOutputStream();
         }
         return null;
     }
 
-    public Boolean saveToDrive(String fileName) throws Exception{
+    public Boolean saveToDrive(String fileName){
 
-        if(driveContents == null)
-            throw new Exception("Null data to save on drive");
+        if(mDriveContents == null)
+            return false;
 
         MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
                 .setTitle(fileName)
                 .build();
         return Drive.DriveApi
-                .getAppFolder(googleApiClient)
-                .createFile(googleApiClient,changeSet, driveContents)
+                .getAppFolder(mGoogleApiClient)
+                .createFile(mGoogleApiClient,changeSet, mDriveContents)
                 .await().getStatus().isSuccess();
     }
 
@@ -80,7 +80,7 @@ public class GoogleDriveManager {
             DriveFile driveFile = metadata.getDriveId().asDriveFile();
 
             DriveApi.DriveContentsResult contentsResult = driveFile
-                    .open(googleApiClient, DriveFile.MODE_READ_ONLY, null)
+                    .open(mGoogleApiClient, DriveFile.MODE_READ_ONLY, null)
                     .await();
             if(contentsResult.getStatus().isSuccess())
                 return contentsResult.getDriveContents().getInputStream();
@@ -90,18 +90,19 @@ public class GoogleDriveManager {
 
 
     public List<String> getFilesList(){
-        List<String> list;
+
         DriveApi.MetadataBufferResult result = Drive.DriveApi
-                .getAppFolder(googleApiClient)
-                .listChildren(googleApiClient)
+                .getAppFolder(mGoogleApiClient)
+                .listChildren(mGoogleApiClient)
                 .await();
 
         if (result.getStatus().isSuccess()) {
-            list = new ArrayList<>();
+            List<String> list = new ArrayList<>();
             MetadataBuffer buffer = result.getMetadataBuffer();
 
-            for (Metadata m : buffer) {
-                list.add(m.getTitle());}
+            for (Metadata m : buffer)
+                list.add(m.getTitle());
+
             buffer.release();
             return  list;
         }
@@ -116,7 +117,7 @@ public class GoogleDriveManager {
                 .addFilter(Filters.eq(SearchableField.TITLE, fileName))
                 .build();
         return Drive.DriveApi
-                .query(googleApiClient, query)
+                .query(mGoogleApiClient, query)
                 .await();
     }
 

@@ -1,92 +1,103 @@
 package com.example.mihail.googledrive.presentation.main.presenter;
 
 
+import android.content.Intent;
+import android.net.Uri;
+
 import com.example.mihail.googledrive.business.choose_file.interactor.IChooseFileInteractor;
 import com.example.mihail.googledrive.business.upload.interactor.IUploadInteractor;
 import com.example.mihail.googledrive.presentation.main.MainContract;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.observers.DisposableObserver;
+import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
 
 public class MainPresenter implements MainContract.Presenter
 {
-    private MainContract.View iMainView;
-    private IUploadInteractor iUploadInteractor;
-    private IChooseFileInteractor iChooseFileInteractor;
-    private CompositeDisposable compositeDisposable;
+    private MainContract.View mMainView;
+    private IUploadInteractor mUploadInteractor;
+    private IChooseFileInteractor mChooseFileInteractor;
+    private CompositeDisposable mCompositeDisposable;
 
 
     public MainPresenter(IUploadInteractor iUploadInteractor, IChooseFileInteractor iChooseFileInteractor)
     {
-        this.iUploadInteractor = iUploadInteractor;
-        this.iChooseFileInteractor = iChooseFileInteractor;
-        this.compositeDisposable = new CompositeDisposable();
+        this.mUploadInteractor = iUploadInteractor;
+        this.mChooseFileInteractor = iChooseFileInteractor;
+        this.mCompositeDisposable = new CompositeDisposable();
     }
 
 
     @Override
     public void bindView(MainContract.View iMainView)
     {
-        this.iMainView = iMainView;
+        this.mMainView = iMainView;
     }
 
     @Override
     public void unbindView()
     {
-        iMainView = null;
-        compositeDisposable.clear();
+        mMainView = null;
+        mCompositeDisposable.clear();
     }
 
     @Override
     public void clickToDownloadActivity() {
 
-        iMainView.showFilesToDownload();
+        mMainView.showFilesToDownload();
     }
 
     @Override
     public void clickToDeleteActivity() {
 
-        iMainView.showFilesToDelete();
+        mMainView.showFilesToDelete();
     }
 
     @Override
     public void clickToUploadFile() {
 
-        iMainView.startUploadFileAction();
+        mMainView.startUploadFileAction();
     }
 
     @Override
     public void chooseFile()
     {
-        iChooseFileInteractor.chooseFile();
+        mCompositeDisposable.add(mChooseFileInteractor.chooseFile()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<Intent>() {
+                    @Override
+                    public void onSuccess(Intent intent) {
+                        if(mMainView!=null) mMainView.chooseFileActivity(intent);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        if(mMainView!=null) mMainView.showErrorMessage(e.getMessage());
+                    }
+                })
+                );
     }
 
     @Override
-    public void uploadFile() {
-        compositeDisposable.add(iUploadInteractor.uploadFile(iMainView.getFileUri())
-                .subscribeOn(Schedulers.io())
+    public void uploadFile(Uri uri) {
+        mCompositeDisposable.add(mUploadInteractor.uploadFile(uri)
                 .observeOn(AndroidSchedulers.mainThread())
-                .toObservable()
-                .subscribeWith(new DisposableObserver<Boolean>() {
+                .subscribeWith(new DisposableSingleObserver<Boolean>() {
                     @Override
-                    public void onNext(@NonNull Boolean result) {
-                        if (result)
-                            iMainView.showSuccessMessage();
-                        else
-                            iMainView.showErrorMessage();
+                    public void onSuccess(Boolean result) {
+                        if(mMainView!=null) {
+                            if (result)
+                                mMainView.showSuccessMessage("File was successfully uploaded");
+                            else
+                                mMainView.showErrorMessage("Error while file uploading");
+                        }
                     }
 
                     @Override
                     public void onError(@NonNull Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
                     }
                 }));
     }

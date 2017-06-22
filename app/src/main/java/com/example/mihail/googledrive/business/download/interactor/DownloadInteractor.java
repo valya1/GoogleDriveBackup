@@ -2,31 +2,32 @@ package com.example.mihail.googledrive.business.download.interactor;
 
 import com.example.mihail.googledrive.data.repository.IDriveRepository;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Single;
-
+import io.reactivex.schedulers.Schedulers;
 
 
 public class DownloadInteractor implements IDownloadInteractor {
 
-    private IDriveRepository iDriveRepository;
+    private IDriveRepository mDriveRepository;
 
-    public DownloadInteractor(IDriveRepository iDriveRepository)
+    public DownloadInteractor(IDriveRepository driveRepository)
     {
-        this.iDriveRepository = iDriveRepository;
+        this.mDriveRepository = driveRepository;
     }
 
     @Override
     public Single<List<String>> getFilesList() {
-        return iDriveRepository.getFilesList()
-                .onErrorReturn(throwable -> new ArrayList<>());
+        return mDriveRepository.getFilesList()
+                .onErrorResumeNext(throwable -> Single.error(new RuntimeException("Unable to get files list")))
+                .subscribeOn(Schedulers.io());
     }
 
     @Override
     public Single<File> downloadFile(String fileName) {
-        return iDriveRepository.downloadFile(fileName)
-                .onErrorResumeNext(throwable -> Single.error(new RuntimeException("Error while downloading file")));
+        return mDriveRepository.downloadFile(fileName)
+                .onErrorResumeNext(throwable -> Single.error(new RuntimeException("Error while downloading file")))
+                .subscribeOn(Schedulers.io());
     }
 }

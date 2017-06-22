@@ -1,6 +1,6 @@
 package com.example.mihail.googledrive.business.upload.interactor;
 
-import android.content.Context;
+import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
@@ -8,46 +8,36 @@ import android.provider.OpenableColumns;
 import com.example.mihail.googledrive.data.entities.FileToUpload;
 import com.example.mihail.googledrive.data.repository.IDriveRepository;
 
-import java.io.IOException;
-
 import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 
 
 public class UploadInteractor implements IUploadInteractor {
 
-    private IDriveRepository driveRepository;
-    //TODO Интерактор это изнеслогикак какой Контекст??
-    private Context context;
+    private IDriveRepository mDriveRepository;
+    private ContentResolver mContentResolver;
 
-    public UploadInteractor(IDriveRepository iDriveRepository, Context context)
+    public UploadInteractor(IDriveRepository driveRepository, ContentResolver contentResolver)
     {
-        this.driveRepository = iDriveRepository;
-        this.context = context;
+        this.mDriveRepository = driveRepository;
+        this.mContentResolver = contentResolver;
     }
     @Override
     public Single<Boolean> uploadFile(Uri fileUri) {
         return createFileToUpload(fileUri)
-                .flatMap(driveRepository::uploadFile)
-                .onErrorResumeNext(throwable -> Single.error(new RuntimeException("Unable to upload file")));
+                .flatMap(mDriveRepository::uploadFile)
+                .onErrorReturn(throwable -> false)
+                .subscribeOn(Schedulers.io());
     }
 
-    private Single<FileToUpload> createFileToUpload(Uri fileUri)
-    {
-        return Single.fromCallable(() -> {
-            try {
-                return new FileToUpload(getTitleFromUri(fileUri), context.getContentResolver().openInputStream(fileUri));
-            }
-            catch (IOException e){
-                e.printStackTrace();
-            }
-            return new FileToUpload();
-        });
+    private Single<FileToUpload> createFileToUpload(Uri fileUri) {
+        return Single.fromCallable(() -> new FileToUpload(getTitleFromUri(fileUri), mContentResolver.openInputStream(fileUri)));
     }
 
     private String getTitleFromUri(Uri uri) {
         String result = null;
         if (uri.getScheme().equals("content")) {
-            Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
+            Cursor cursor = mContentResolver.query(uri, null, null, null, null);
                 if (cursor != null && cursor.moveToFirst()) {
                     result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
                 cursor.close();

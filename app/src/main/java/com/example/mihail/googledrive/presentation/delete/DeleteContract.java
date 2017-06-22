@@ -1,15 +1,13 @@
 package com.example.mihail.googledrive.presentation.delete;
 
 import com.example.mihail.googledrive.BasePresenter;
+import com.example.mihail.googledrive.BaseView;
 
 public interface DeleteContract {
 
-    interface View{
+    interface View extends BaseView{
 
         void refreshFileList();
-        void showSuccessMessage();
-        void showErrorMessage();
-
     }
 
     interface Presenter extends BasePresenter<DeleteContract.View>{

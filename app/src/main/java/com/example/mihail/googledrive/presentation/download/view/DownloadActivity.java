@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.Toast;
 
 import com.example.mihail.googledrive.BaseActivity;
 import com.example.mihail.googledrive.R;
@@ -19,9 +18,9 @@ import com.example.mihail.googledrive.presentation.recycler_data.view.IFileAdapt
 
 public class DownloadActivity extends BaseActivity implements DownloadContract.View
 {
-    private IFileAdapterView iFileAdapterView;
+    private IFileAdapterView mFileAdapterView;
 
-    private  DownloadContract.Presenter iDownloadPresenter;
+    private  DownloadContract.Presenter mDownloadPresenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -32,14 +31,14 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.V
 
         FilesAdapter filesAdapter = new FilesAdapter();
 
-        iFileAdapterView = filesAdapter;
+        mFileAdapterView = filesAdapter;
 
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        iDownloadPresenter = new DownloadPresenter(new DownloadInteractor(new DriveRepository(new GoogleDriveManager(getApiGoogleClient()))), filesAdapter);
+        mDownloadPresenter = new DownloadPresenter(new DownloadInteractor(new DriveRepository(new GoogleDriveManager(getApiGoogleClient()))), filesAdapter);
 
-        filesAdapter.setOnClickFileListener(( (adapter, position) -> iDownloadPresenter.downloadFile(position) ));
+        filesAdapter.setOnClickFileListener(( (adapter, position) -> mDownloadPresenter.downloadFile(position) ));
 
         recyclerView.setAdapter(filesAdapter);
 
@@ -48,34 +47,25 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.V
     @Override
     protected void onStop() {
         super.onStop();
-        iDownloadPresenter.unbindView();
+        mDownloadPresenter.unbindView();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        iDownloadPresenter.bindView(this);
+        mDownloadPresenter.bindView(this);
     }
 
     @Override
     public void refreshFiles()
     {
-        iFileAdapterView.refresh();
+        mFileAdapterView.refresh();
     }
 
-    @Override
-    public void showSuccessMessage(String result) {
-        Toast.makeText(this, result, Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void showErrorMessage() {
-        Toast.makeText(this, "Error while file downloading", Toast.LENGTH_LONG).show();
-    }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         super.onConnected(bundle);
-        iDownloadPresenter.provideData();
+        mDownloadPresenter.provideData();
     }
 }
