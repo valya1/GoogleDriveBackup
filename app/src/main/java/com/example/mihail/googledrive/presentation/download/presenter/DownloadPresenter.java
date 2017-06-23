@@ -40,13 +40,16 @@ public class DownloadPresenter implements DownloadContract.Presenter {
                 .subscribe(new DisposableSingleObserver<List<String>>() {
                     @Override
                     public void onSuccess(List<String> list) {
-                        mFileAdapterModel.update(list);
-                        mDownloadView.refreshFiles();
+                        if(mFileAdapterModel !=null)
+                            mFileAdapterModel.update(list);
+                        if(mDownloadView!=null)
+                            mDownloadView.refreshFiles();
                     }
 
                     @Override
                     public void onError(@NonNull Throwable e) {
-                        mDownloadView.showErrorMessage(e.getMessage());
+                        if(mDownloadView!=null)
+                            mDownloadView.showErrorMessage(e.getMessage());
                     }
                 });
     }
