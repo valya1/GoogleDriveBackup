@@ -8,6 +8,7 @@ import android.provider.OpenableColumns;
 import com.example.mihail.googledrive.data.entities.FileToUpload;
 import com.example.mihail.googledrive.data.repository.IDriveRepository;
 
+import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 
@@ -23,10 +24,10 @@ public class UploadInteractor implements IUploadInteractor {
         this.mContentResolver = contentResolver;
     }
     @Override
-    public Single<Boolean> uploadFile(Uri fileUri) {
+    public Completable uploadFile(Uri fileUri) {
         return createFileToUpload(fileUri)
-                .flatMap(mDriveRepository::uploadFile)
-                .onErrorReturn(throwable -> false)
+                .flatMapCompletable(mDriveRepository::uploadFile)
+                .onErrorResumeNext(throwable -> Completable.error(new RuntimeException("Unable to upload file")))
                 .subscribeOn(Schedulers.io());
     }
 

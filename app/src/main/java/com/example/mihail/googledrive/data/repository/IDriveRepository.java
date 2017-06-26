@@ -5,12 +5,13 @@ import com.example.mihail.googledrive.data.entities.FileToUpload;
 import java.io.File;
 import java.util.List;
 
+import io.reactivex.Completable;
 import io.reactivex.Single;
 
 public interface IDriveRepository {
 
-    Single<Boolean> uploadFile(FileToUpload fileToUpload);
+    Completable uploadFile(FileToUpload fileToUpload);
     Single<File> downloadFile(String fileName);
-    Single<Boolean> deleteFile(String fileName);
+    Completable deleteFile(String fileName);
     Single<List<String>> getFilesList();
 }

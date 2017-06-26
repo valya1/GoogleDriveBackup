@@ -16,7 +16,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.drive.Drive;
 
 public class BaseActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,
-        GoogleApiClient.ConnectionCallbacks, BaseView {
+        GoogleApiClient.ConnectionCallbacks, BaseContract.BaseView {
 
     private static final int REQUEST_CODE_RESOLUTION = 1;
     private GoogleApiClient mGoogleApiClient;

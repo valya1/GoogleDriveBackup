@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.Toast;
 
 import com.example.mihail.googledrive.BaseActivity;
 import com.example.mihail.googledrive.R;
@@ -62,10 +61,6 @@ public class DeleteActivity extends BaseActivity implements DeleteContract.View{
         mFileAdapterView.refresh();
     }
 
-    @Override
-    public void showErrorMessage(String message) {
-        Toast.makeText(this,message, Toast.LENGTH_LONG).show();
-    }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {

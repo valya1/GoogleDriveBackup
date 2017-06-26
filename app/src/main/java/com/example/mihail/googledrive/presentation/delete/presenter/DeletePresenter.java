@@ -3,10 +3,10 @@ package com.example.mihail.googledrive.presentation.delete.presenter;
 import com.example.mihail.googledrive.business.delete.interactor.IDeleteInteractor;
 import com.example.mihail.googledrive.presentation.delete.DeleteContract;
 import com.example.mihail.googledrive.presentation.recycler_data.model.IFileAdapterModel;
-import java.util.List;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.observers.DisposableSingleObserver;
+
+import io.reactivex.internal.observers.ConsumerSingleObserver;
+
 
 
 public class DeletePresenter implements DeleteContract.Presenter {
@@ -34,46 +34,27 @@ public class DeletePresenter implements DeleteContract.Presenter {
     public void provideData() {
         mDeleteInteractor.getFilesList()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DisposableSingleObserver<List<String>>() {
-                    @Override
-                    public void onSuccess(List<String> list) {
-                        if(mFileAdapterModel!=null)
-                            mFileAdapterModel.update(list);
-                        if(mDeleteView!=null)
-                            mDeleteView.refreshFileList();
-                    }
-
-                    @Override
-                    public void onError(@NonNull Throwable e) {
-                        if(mDeleteView!=null)
-                            mDeleteView.showErrorMessage(e.getMessage());
-                    }
-                });
+                .subscribe(new ConsumerSingleObserver<>(list -> {
+                    if(mFileAdapterModel!=null) mFileAdapterModel.update(list);
+                    if(mDeleteView!=null) mDeleteView.refreshFileList();
+                    }, throwable -> {
+                    if(mDeleteView!=null) mDeleteView.showErrorMessage(throwable.getMessage());
+                }));
     }
 
     @Override
     public void deleteFile(int position) {
             mDeleteInteractor
-                .deleteFile(mFileAdapterModel.getFileName(position))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DisposableSingleObserver<Boolean>() {
-
-                    @Override
-                    public void onSuccess(Boolean result) {
-                        if(mDeleteView !=null) {
-                            if (result) {
-                                mFileAdapterModel.remove(position);
-                                mDeleteView.showSuccessMessage("File was successfully deleted");
-                                mDeleteView.refreshFileList();
-                            } else
-                                mDeleteView.showErrorMessage("Error while file uploading");
-                        }
-                    }
-
-                    @Override
-                    public void onError(@NonNull Throwable e) {
-
-                    }
-                });
+                    .deleteFile(mFileAdapterModel.getFileName(position))
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(()-> {
+                if(mDeleteView!=null){
+                    mFileAdapterModel.remove(position);
+                    mDeleteView.showSuccessMessage("File was successfully deleted");
+                    mDeleteView.refreshFileList();
+                }
+                    },throwable -> {
+                if(mDeleteView!=null) mDeleteView.showErrorMessage(throwable.getMessage());
+            });
     }
 }

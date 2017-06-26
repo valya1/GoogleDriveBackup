@@ -9,8 +9,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+
+import io.reactivex.Completable;
 import io.reactivex.Single;
-import io.reactivex.annotations.Nullable;
+import io.reactivex.annotations.NonNull;
 
 public class DriveRepository implements IDriveRepository {
 
@@ -21,9 +23,9 @@ public class DriveRepository implements IDriveRepository {
     }
 
     @Override
-    @Nullable
-    public Single<Boolean> uploadFile(FileToUpload fileToUpload) {
-        return Single.fromCallable(() ->
+    @NonNull
+    public Completable uploadFile(FileToUpload fileToUpload) {
+        return Completable.fromCallable(() ->
         {
             InputStream inputStream = fileToUpload.getFileInputStream();
             OutputStream outputStream = mGoogleDriveManager.getOutputStream();
@@ -34,7 +36,7 @@ public class DriveRepository implements IDriveRepository {
     }
 
     @Override
-    @Nullable
+    @NonNull
     public Single<File> downloadFile(String fileName) {
         return Single.fromCallable(() -> {
             //download root
@@ -42,23 +44,20 @@ public class DriveRepository implements IDriveRepository {
                     + "/" + fileName);
             OutputStream outputStream = new FileOutputStream(file);
             InputStream inputStream = mGoogleDriveManager.getInputStream(fileName);
-            if(inputStream != null) {
-                buffer(inputStream, outputStream);
-                return file;
-            }
+            buffer(inputStream, outputStream);
             outputStream.close();
-            return null;
+            return file;
         });
     }
 
     @Override
-    @Nullable
-    public Single<Boolean> deleteFile(String fileName) {
-        return Single.fromCallable(() -> mGoogleDriveManager.deleteFile(fileName));
+    @NonNull
+    public Completable deleteFile(String fileName) {
+        return Completable.fromCallable(() -> mGoogleDriveManager.deleteFile(fileName));
     }
 
     @Override
-    @Nullable
+    @NonNull
     public Single<List<String>> getFilesList() {
         return Single.fromCallable(() -> mGoogleDriveManager.getFilesList());
     }

@@ -2,11 +2,10 @@ package com.example.mihail.googledrive.business.upload.interactor;
 
 import android.net.Uri;
 
-import io.reactivex.Single;
-
+import io.reactivex.Completable;
 
 
 public interface IUploadInteractor {
 
-     Single<Boolean> uploadFile(Uri fileUri);
+     Completable uploadFile(Uri fileUri);
 }

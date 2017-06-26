@@ -3,12 +3,11 @@ package com.example.mihail.googledrive.presentation.main;
 import android.content.Intent;
 import android.net.Uri;
 
-import com.example.mihail.googledrive.BasePresenter;
-import com.example.mihail.googledrive.BaseView;
+import com.example.mihail.googledrive.BaseContract;
 
 public interface MainContract {
 
-    interface View extends BaseView{
+    interface View extends BaseContract.BaseView {
         void showFilesToDownload();
 
         void showFilesToDelete();
@@ -18,7 +17,7 @@ public interface MainContract {
         void chooseFileActivity(Intent intent);
     }
 
-    interface Presenter extends BasePresenter<MainContract.View>{
+    interface Presenter extends BaseContract.BasePresenter<View> {
 
         void clickToDownloadActivity();
         void clickToDeleteActivity();

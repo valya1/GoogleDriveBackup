@@ -8,7 +8,6 @@ import android.view.View;
 
 import com.example.mihail.googledrive.BaseActivity;
 import com.example.mihail.googledrive.R;
-import com.example.mihail.googledrive.business.choose_file.interactor.ChooseFileInteractor;
 import com.example.mihail.googledrive.business.upload.interactor.UploadInteractor;
 import com.example.mihail.googledrive.data.models.GoogleDriveManager;
 import com.example.mihail.googledrive.data.repository.DriveRepository;
@@ -34,8 +33,7 @@ public class StartActivity extends BaseActivity implements MainContract.View {
         setContentView(R.layout.activity_main);
 
         mMainPresenter = new MainPresenter(new UploadInteractor(new DriveRepository(new GoogleDriveManager(getApiGoogleClient()))
-                ,getContentResolver()),
-                new ChooseFileInteractor());
+                ,getContentResolver()));
 
         chooseFileToDelete = findViewById(R.id.btnToDeleteList);
         chooseFileToDownload = findViewById(R.id.btnToDownloadList);

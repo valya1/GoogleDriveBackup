@@ -4,6 +4,7 @@ import com.example.mihail.googledrive.data.repository.IDriveRepository;
 
 import java.util.List;
 
+import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 
@@ -16,6 +17,8 @@ public class DeleteInteractor implements IDeleteInteractor {
     {
         this.mDriveRepository = driveRepository;
     }
+
+
     @Override
     public Single<List<String>> getFilesList() {
         return mDriveRepository.getFilesList()
@@ -24,9 +27,9 @@ public class DeleteInteractor implements IDeleteInteractor {
     }
 
     @Override
-    public Single<Boolean> deleteFile(String fileName) {
+    public Completable deleteFile(String fileName) {
         return mDriveRepository.deleteFile(fileName)
-                .onErrorReturn(throwable -> false)
+                .onErrorResumeNext(throwable -> Completable.error(new RuntimeException("Error while deleting file")))
                 .subscribeOn(Schedulers.io());
     }
 }

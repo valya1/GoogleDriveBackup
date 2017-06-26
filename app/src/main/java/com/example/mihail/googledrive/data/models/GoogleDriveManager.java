@@ -30,22 +30,25 @@ public class GoogleDriveManager {
             Drive.DriveApi.requestSync(googleApiClient).await();
     }
 
-    public Boolean deleteFile(String fileName){
+    @NonNull
+    public Void deleteFile(String fileName){
         DriveApi.MetadataBufferResult result = getMetadataBufferResult(fileName);
 
         if (result.getStatus().isSuccess()) {
-            return result.getMetadataBuffer()
+            if(result.getMetadataBuffer()
                     .get(0)
                     .getDriveId()
                     .asDriveFile()
                     .delete(mGoogleApiClient)
                     .await()
                     .getStatus()
-                    .isSuccess();
+                    .isSuccess())
+                return null;
         }
-        return null;
+        throw new RuntimeException(result.getStatus().getStatusMessage());
     }
 
+    @NonNull
     public OutputStream getOutputStream(){
 
         DriveApi.DriveContentsResult contentsResult = Drive.DriveApi
@@ -55,23 +58,28 @@ public class GoogleDriveManager {
             mDriveContents = contentsResult.getDriveContents();
             return contentsResult.getDriveContents().getOutputStream();
         }
-        return null;
+        throw new RuntimeException("Unable to get a File from Drive");
     }
 
-    public Boolean saveToDrive(String fileName){
+    @NonNull
+    public Void saveToDrive(String fileName){
 
         if(mDriveContents == null)
-            return false;
+            throw new NullPointerException("Null file is trying to be uploaded to Drive");
 
         MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
                 .setTitle(fileName)
                 .build();
-        return Drive.DriveApi
+
+            if( !Drive.DriveApi
                 .getAppFolder(mGoogleApiClient)
                 .createFile(mGoogleApiClient,changeSet, mDriveContents)
-                .await().getStatus().isSuccess();
+                .await().getStatus().isSuccess())
+                throw new RuntimeException("Unable to save file on Drive");
+            return null;
     }
 
+    @NonNull
     public InputStream getInputStream(String fileName) {
         DriveApi.MetadataBufferResult result = getMetadataBufferResult(fileName);
 
@@ -85,10 +93,10 @@ public class GoogleDriveManager {
             if(contentsResult.getStatus().isSuccess())
                 return contentsResult.getDriveContents().getInputStream();
         }
-        return null;
+        throw new RuntimeException("Unable to create file in Drive");
     }
 
-
+    @NonNull
     public List<String> getFilesList(){
 
         DriveApi.MetadataBufferResult result = Drive.DriveApi
@@ -106,7 +114,7 @@ public class GoogleDriveManager {
             buffer.release();
             return  list;
         }
-        return null;
+        throw new RuntimeException("Unable to get file list from Drive");
 
     }
 

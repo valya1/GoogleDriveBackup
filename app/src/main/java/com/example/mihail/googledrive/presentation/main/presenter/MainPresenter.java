@@ -4,25 +4,21 @@ package com.example.mihail.googledrive.presentation.main.presenter;
 import android.content.Intent;
 import android.net.Uri;
 
-import com.example.mihail.googledrive.business.choose_file.interactor.IChooseFileInteractor;
 import com.example.mihail.googledrive.business.upload.interactor.IUploadInteractor;
 import com.example.mihail.googledrive.presentation.main.MainContract;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.observers.DisposableSingleObserver;
+
 
 
 public class MainPresenter implements MainContract.Presenter
 {
     private MainContract.View mMainView;
     private IUploadInteractor mUploadInteractor;
-    private IChooseFileInteractor mChooseFileInteractor;
 
-    public MainPresenter(IUploadInteractor iUploadInteractor, IChooseFileInteractor iChooseFileInteractor)
+    public MainPresenter(IUploadInteractor iUploadInteractor)
     {
         this.mUploadInteractor = iUploadInteractor;
-        this.mChooseFileInteractor = iChooseFileInteractor;
     }
 
 
@@ -59,40 +55,24 @@ public class MainPresenter implements MainContract.Presenter
     @Override
     public void chooseFile()
     {
-        mChooseFileInteractor.chooseFile()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DisposableSingleObserver<Intent>() {
-                    @Override
-                    public void onSuccess(Intent intent) {
-                        if(mMainView!=null) mMainView.chooseFileActivity(intent);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        if(mMainView!=null) mMainView.showErrorMessage(e.getMessage());
-                    }
-                });
+        mMainView.chooseFileActivity(new Intent(Intent.ACTION_GET_CONTENT)
+                .setType("*/*")
+                .addCategory(Intent.CATEGORY_OPENABLE));
     }
 
     @Override
     public void uploadFile(Uri uri) {
-                mUploadInteractor.uploadFile(uri)
+        if(uri==null) {
+            mMainView.showErrorMessage("No data");
+            return;
+        }
+        mUploadInteractor.uploadFile(uri)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DisposableSingleObserver<Boolean>() {
-                    @Override
-                    public void onSuccess(Boolean result) {
-                        if(mMainView!=null) {
-                            if (result)
-                                mMainView.showSuccessMessage("File was successfully uploaded");
-                            else
-                                mMainView.showErrorMessage("Error while file uploading");
-                        }
-                    }
-
-                    @Override
-                    public void onError(@NonNull Throwable e) {
-                    }
-                });
+                .subscribe(() -> {
+            if(mMainView !=null) mMainView.showSuccessMessage("File was successfully uploaded");
+                }, throwable -> {
+            if(mMainView!=null) mMainView.showErrorMessage(throwable.getMessage());
+        });
     }
 }
 
