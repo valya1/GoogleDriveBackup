@@ -30,7 +30,6 @@ public class GoogleDriveManager {
             Drive.DriveApi.requestSync(googleApiClient).await();
     }
 
-    @NonNull
     public Void deleteFile(String fileName){
         DriveApi.MetadataBufferResult result = getMetadataBufferResult(fileName);
 
@@ -48,7 +47,6 @@ public class GoogleDriveManager {
         throw new RuntimeException(result.getStatus().getStatusMessage());
     }
 
-    @NonNull
     public OutputStream getOutputStream(){
 
         DriveApi.DriveContentsResult contentsResult = Drive.DriveApi
@@ -61,7 +59,6 @@ public class GoogleDriveManager {
         throw new RuntimeException("Unable to get a File from Drive");
     }
 
-    @NonNull
     public Void saveToDrive(String fileName){
 
         if(mDriveContents == null)
