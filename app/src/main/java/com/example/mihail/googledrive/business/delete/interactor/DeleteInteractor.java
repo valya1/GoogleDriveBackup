@@ -22,14 +22,14 @@ public class DeleteInteractor implements IDeleteInteractor {
     @Override
     public Single<List<String>> getFilesList() {
         return mDriveRepository.getFilesList()
-                .onErrorResumeNext(throwable -> Single.error(new RuntimeException("Unable to get files list")))
+                .onErrorResumeNext(Single::error)
                 .subscribeOn(Schedulers.io());
     }
 
     @Override
     public Completable deleteFile(String fileName) {
         return mDriveRepository.deleteFile(fileName)
-                .onErrorResumeNext(throwable -> Completable.error(new RuntimeException("Error while deleting file")))
+                .onErrorResumeNext(Completable::error)
                 .subscribeOn(Schedulers.io());
     }
 }

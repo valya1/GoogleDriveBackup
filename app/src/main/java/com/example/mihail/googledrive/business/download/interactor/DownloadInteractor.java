@@ -20,14 +20,14 @@ public class DownloadInteractor implements IDownloadInteractor {
     @Override
     public Single<List<String>> getFilesList() {
         return mDriveRepository.getFilesList()
-                .onErrorResumeNext(throwable -> Single.error(new RuntimeException("Unable to get files list")))
+                .onErrorResumeNext(Single::error)
                 .subscribeOn(Schedulers.io());
     }
 
     @Override
     public Single<File> downloadFile(String fileName) {
         return mDriveRepository.downloadFile(fileName)
-                .onErrorResumeNext(throwable -> Single.error(new RuntimeException("Error while downloading file")))
+                .onErrorResumeNext(Single::error)
                 .subscribeOn(Schedulers.io());
     }
 }

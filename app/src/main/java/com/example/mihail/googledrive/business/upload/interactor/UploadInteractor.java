@@ -27,7 +27,7 @@ public class UploadInteractor implements IUploadInteractor {
     public Completable uploadFile(Uri fileUri) {
         return createFileToUpload(fileUri)
                 .flatMapCompletable(mDriveRepository::uploadFile)
-                .onErrorResumeNext(throwable -> Completable.error(new RuntimeException("Unable to upload file")))
+                .onErrorResumeNext(Completable::error)
                 .subscribeOn(Schedulers.io());
     }
 
