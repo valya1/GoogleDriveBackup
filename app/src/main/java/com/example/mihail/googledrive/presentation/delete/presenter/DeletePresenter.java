@@ -5,9 +5,6 @@ import com.example.mihail.googledrive.presentation.delete.DeleteContract;
 import com.example.mihail.googledrive.presentation.recycler_data.model.IFileAdapterModel;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
-import io.reactivex.internal.observers.ConsumerSingleObserver;
-
-
 
 public class DeletePresenter implements DeleteContract.Presenter {
 
@@ -34,12 +31,12 @@ public class DeletePresenter implements DeleteContract.Presenter {
     public void provideData() {
         mDeleteInteractor.getFilesList()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new ConsumerSingleObserver<>(list -> {
+                .subscribe(list -> {
                     if(mFileAdapterModel!=null) mFileAdapterModel.update(list);
                     if(mDeleteView!=null) mDeleteView.refreshFileList();
                     }, throwable -> {
                     if(mDeleteView!=null) mDeleteView.showErrorMessage(throwable.getMessage());
-                }));
+                });
     }
 
     @Override

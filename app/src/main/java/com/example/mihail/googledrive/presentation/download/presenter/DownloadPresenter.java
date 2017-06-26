@@ -6,7 +6,6 @@ import com.example.mihail.googledrive.presentation.download.DownloadContract;
 import com.example.mihail.googledrive.presentation.recycler_data.model.IFileAdapterModel;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.internal.observers.ConsumerSingleObserver;
 
 public class DownloadPresenter implements DownloadContract.Presenter {
 
@@ -34,7 +33,7 @@ public class DownloadPresenter implements DownloadContract.Presenter {
     public void provideData() {
         mDownloadInteractor.getFilesList()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new ConsumerSingleObserver<>(list -> {
+                .subscribe(list -> {
                     if(mFileAdapterModel !=null)
                         mFileAdapterModel.update(list);
                     if(mDownloadView!=null)
@@ -43,7 +42,7 @@ public class DownloadPresenter implements DownloadContract.Presenter {
                     if(mDownloadView!=null)
                     mDownloadView.showErrorMessage(throwable.getMessage());
                 }
-                ));
+                );
     }
 
     @Override
@@ -51,9 +50,9 @@ public class DownloadPresenter implements DownloadContract.Presenter {
         mDownloadInteractor
                 .downloadFile(mFileAdapterModel.getFileName(position))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new ConsumerSingleObserver<>(file -> {
+                .subscribe(file -> {
                     if(mDownloadView!=null) mDownloadView.showSuccessMessage(file.getAbsolutePath());
                 }, throwable -> {if(mDownloadView!=null) mDownloadView.showErrorMessage(throwable.getMessage());
-                }));
+                });
     }
 }
