@@ -34,25 +34,24 @@ public class DownloadPresenter implements DownloadContract.Presenter {
         mDownloadInteractor.getFilesList()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(list -> {
-                    if(mFileAdapterModel !=null)
-                        mFileAdapterModel.update(list);
-                    if(mDownloadView!=null)
-                        mDownloadView.refreshFiles();
-                }, throwable -> {
-                    if(mDownloadView!=null)
-                    mDownloadView.showErrorMessage(throwable.getMessage());
-                }
+                            if (mFileAdapterModel != null) mFileAdapterModel.update(list);
+                            if (mDownloadView != null) mDownloadView.refreshFiles();
+                        }
+                , throwable -> {
+                            if (mDownloadView != null) mDownloadView.showErrorMessage(throwable.getMessage());
+                        }
                 );
     }
 
     @Override
     public void downloadFile(int position) {
-        mDownloadInteractor
-                .downloadFile(mFileAdapterModel.getFileName(position))
+        mDownloadInteractor.downloadFile(mFileAdapterModel.getFileName(position))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(file -> {
-                    if(mDownloadView!=null) mDownloadView.showSuccessMessage(file.getAbsolutePath());
-                }, throwable -> {if(mDownloadView!=null) mDownloadView.showErrorMessage(throwable.getMessage());
-                });
+                            if (mDownloadView != null) mDownloadView.showSuccessMessage(file.getAbsolutePath());
+                        }
+                    ,throwable -> {
+                            if (mDownloadView != null) mDownloadView.showErrorMessage(throwable.getMessage());
+                        });
     }
 }

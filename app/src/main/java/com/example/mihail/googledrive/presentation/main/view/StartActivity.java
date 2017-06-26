@@ -65,8 +65,8 @@ public class StartActivity extends BaseActivity implements MainContract.View {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
         mMainPresenter.bindView(this);
     }
 

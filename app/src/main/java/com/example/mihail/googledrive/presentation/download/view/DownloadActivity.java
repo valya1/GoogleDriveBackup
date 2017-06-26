@@ -38,7 +38,7 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.V
 
         mDownloadPresenter = new DownloadPresenter(new DownloadInteractor(new DriveRepository(new GoogleDriveManager(getApiGoogleClient()))), filesAdapter);
 
-        filesAdapter.setOnClickFileListener(( (adapter, position) -> mDownloadPresenter.downloadFile(position) ));
+        filesAdapter.setOnClickFileListener( (adapter, position) -> mDownloadPresenter.downloadFile(position) );
 
         recyclerView.setAdapter(filesAdapter);
 

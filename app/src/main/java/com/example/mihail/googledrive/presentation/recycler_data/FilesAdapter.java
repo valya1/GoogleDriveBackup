@@ -31,7 +31,6 @@ public class FilesAdapter extends RecyclerView.Adapter<FileViewHolder> implement
 
     @Override
     public void onBindViewHolder(FileViewHolder holder, int position) {
-        String s = mFilesList.get(position);
         holder.mFileName.setText(mFilesList.get(position));
         holder.itemView.setOnClickListener(v -> {
             if (mOnClickFileListener != null)

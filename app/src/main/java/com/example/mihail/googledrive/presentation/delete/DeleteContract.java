@@ -4,12 +4,12 @@ import com.example.mihail.googledrive.BaseContract;
 
 public interface DeleteContract {
 
-    interface View extends BaseContract.BaseView {
+    interface View extends BaseContract.View {
 
         void refreshFileList();
     }
 
-    interface Presenter extends BaseContract.BasePresenter<View> {
+    interface Presenter extends BaseContract.Presenter<View> {
 
         void provideData();
 

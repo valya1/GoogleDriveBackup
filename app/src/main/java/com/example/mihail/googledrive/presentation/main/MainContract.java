@@ -7,7 +7,7 @@ import com.example.mihail.googledrive.BaseContract;
 
 public interface MainContract {
 
-    interface View extends BaseContract.BaseView {
+    interface View extends BaseContract.View {
         void showFilesToDownload();
 
         void showFilesToDelete();
@@ -17,7 +17,7 @@ public interface MainContract {
         void chooseFileActivity(Intent intent);
     }
 
-    interface Presenter extends BaseContract.BasePresenter<View> {
+    interface Presenter extends BaseContract.Presenter<View> {
 
         void clickToDownloadActivity();
         void clickToDeleteActivity();

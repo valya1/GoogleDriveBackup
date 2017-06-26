@@ -21,7 +21,6 @@ public class MainPresenter implements MainContract.Presenter
         this.mUploadInteractor = iUploadInteractor;
     }
 
-
     @Override
     public void bindView(MainContract.View iMainView)
     {
@@ -69,10 +68,11 @@ public class MainPresenter implements MainContract.Presenter
         mUploadInteractor.uploadFile(uri)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
-            if(mMainView !=null) mMainView.showSuccessMessage("File was successfully uploaded");
-                }, throwable -> {
-            if(mMainView!=null) mMainView.showErrorMessage(throwable.getMessage());
-        });
+                            if (mMainView != null) mMainView.showSuccessMessage("File was successfully uploaded");
+                        }
+                , throwable -> {
+                            if (mMainView != null) mMainView.showErrorMessage(throwable.getMessage());
+                        });
     }
 }
 

@@ -2,11 +2,14 @@ package com.example.mihail.googledrive.data.models;
 
 import android.support.annotation.NonNull;
 
+import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.drive.DriveApi;
 import com.google.android.gms.drive.DriveContents;
 import com.google.android.gms.drive.DriveFile;
+import com.google.android.gms.drive.DriveStatusCodes;
 import com.google.android.gms.drive.Metadata;
 import com.google.android.gms.drive.MetadataBuffer;
 import com.google.android.gms.drive.MetadataChangeSet;
@@ -26,25 +29,18 @@ public class GoogleDriveManager {
 
     public GoogleDriveManager(GoogleApiClient googleApiClient) {
         this.mGoogleApiClient = googleApiClient;
-        if(googleApiClient.isConnected())
-            Drive.DriveApi.requestSync(googleApiClient).await();
     }
 
-    public Void deleteFile(String fileName){
+    public void deleteFile(String fileName){
         DriveApi.MetadataBufferResult result = getMetadataBufferResult(fileName);
 
-        if (result.getStatus().isSuccess()) {
-            if(result.getMetadataBuffer()
-                    .get(0)
-                    .getDriveId()
-                    .asDriveFile()
-                    .delete(mGoogleApiClient)
-                    .await()
-                    .getStatus()
-                    .isSuccess())
-                return null;
-        }
-        throw new RuntimeException(result.getStatus().getStatusMessage());
+        if (!(result.getStatus().isSuccess() && result.getMetadataBuffer().get(0).getDriveId()
+                .asDriveFile()
+                .delete(mGoogleApiClient)
+                .await()
+                .getStatus()
+                .isSuccess()))
+            throw new RuntimeException(result.getStatus().getStatusMessage());
     }
 
     public OutputStream getOutputStream(){
@@ -56,24 +52,30 @@ public class GoogleDriveManager {
             mDriveContents = contentsResult.getDriveContents();
             return contentsResult.getDriveContents().getOutputStream();
         }
-        throw new RuntimeException("Unable to get a File from Drive");
+        else
+            throw new RuntimeException(contentsResult.getStatus().getStatusMessage());
     }
 
-    public Void saveToDrive(String fileName){
+    public void saveToDrive(String fileName){
 
         if(mDriveContents == null)
             throw new NullPointerException("Null file is trying to be uploaded to Drive");
 
-        MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
-                .setTitle(fileName)
-                .build();
+        if(mGoogleApiClient.getConnectionResult(Drive.API).isSuccess()) {
+            MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
+                    .setTitle(fileName)
+                    .build();
+            Status status = Drive.DriveApi
+                    .getAppFolder(mGoogleApiClient)
+                    .createFile(mGoogleApiClient, changeSet, mDriveContents)
+                    .await()
+                    .getStatus();
 
-            if( !Drive.DriveApi
-                .getAppFolder(mGoogleApiClient)
-                .createFile(mGoogleApiClient,changeSet, mDriveContents)
-                .await().getStatus().isSuccess())
-                throw new RuntimeException("Unable to save file on Drive");
-            return null;
+            if (!status.isSuccess())
+                throw new RuntimeException(status.getStatusMessage());
+        }
+        else
+            throw new RuntimeException(mGoogleApiClient.getConnectionResult(Drive.API).getErrorMessage());
     }
 
     @NonNull
@@ -89,29 +91,39 @@ public class GoogleDriveManager {
                     .await();
             if(contentsResult.getStatus().isSuccess())
                 return contentsResult.getDriveContents().getInputStream();
+            else
+                throw new RuntimeException(contentsResult.getStatus().getStatusMessage());
         }
-        throw new RuntimeException("Unable to create file in Drive");
+        else
+            throw new RuntimeException(result.getStatus().getStatusMessage());
     }
 
     @NonNull
     public List<String> getFilesList(){
-
-        DriveApi.MetadataBufferResult result = Drive.DriveApi
-                .getAppFolder(mGoogleApiClient)
-                .listChildren(mGoogleApiClient)
+        Status status = Drive.DriveApi.requestSync(mGoogleApiClient)
                 .await();
+        int statusCode = status.getStatusCode();
+        if(statusCode == CommonStatusCodes.SUCCESS || statusCode == DriveStatusCodes.DRIVE_RATE_LIMIT_EXCEEDED) {
+            DriveApi.MetadataBufferResult result = Drive.DriveApi
+                    .getAppFolder(mGoogleApiClient)
+                    .listChildren(mGoogleApiClient)
+                    .await();
 
-        if (result.getStatus().isSuccess()) {
-            List<String> list = new ArrayList<>();
-            MetadataBuffer buffer = result.getMetadataBuffer();
+            if (result.getStatus().isSuccess()) {
+                List<String> list = new ArrayList<>();
+                MetadataBuffer buffer = result.getMetadataBuffer();
 
-            for (Metadata m : buffer)
-                list.add(m.getTitle());
+                for (Metadata m : buffer)
+                    list.add(m.getTitle());
 
-            buffer.release();
-            return  list;
+                buffer.release();
+                return list;
+            }
+            else
+                throw new RuntimeException(result.getStatus().getStatusMessage());
         }
-        throw new RuntimeException("Unable to get file list from Drive");
+        else
+            throw new RuntimeException(status.getStatusMessage());
 
     }
 

@@ -2,13 +2,13 @@ package com.example.mihail.googledrive;
 
 public interface BaseContract {
 
-    interface BasePresenter<V> {
+    interface Presenter<V> {
 
         void bindView(V view);
         void unbindView();
     }
 
-    interface BaseView {
+    interface View {
 
         void showSuccessMessage(String message);
 

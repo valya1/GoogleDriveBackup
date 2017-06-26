@@ -32,26 +32,27 @@ public class DeletePresenter implements DeleteContract.Presenter {
         mDeleteInteractor.getFilesList()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(list -> {
-                    if(mFileAdapterModel!=null) mFileAdapterModel.update(list);
-                    if(mDeleteView!=null) mDeleteView.refreshFileList();
-                    }, throwable -> {
-                    if(mDeleteView!=null) mDeleteView.showErrorMessage(throwable.getMessage());
-                });
+                            if (mFileAdapterModel != null) mFileAdapterModel.update(list);
+                            if (mDeleteView != null) mDeleteView.refreshFileList();
+                        }
+                    , throwable -> {
+                            if (mDeleteView != null) mDeleteView.showErrorMessage(throwable.getMessage());
+                        });
     }
 
     @Override
     public void deleteFile(int position) {
-            mDeleteInteractor
-                    .deleteFile(mFileAdapterModel.getFileName(position))
+            mDeleteInteractor.deleteFile(mFileAdapterModel.getFileName(position))
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(()-> {
-                if(mDeleteView!=null){
-                    mFileAdapterModel.remove(position);
-                    mDeleteView.showSuccessMessage("File was successfully deleted");
-                    mDeleteView.refreshFileList();
-                }
-                    },throwable -> {
-                if(mDeleteView!=null) mDeleteView.showErrorMessage(throwable.getMessage());
-            });
+                                if (mDeleteView != null) {
+                                    mFileAdapterModel.remove(position);
+                                    mDeleteView.showSuccessMessage("File was successfully deleted");
+                                    mDeleteView.refreshFileList();
+                                }
+                            }
+                    , throwable -> {
+                                if (mDeleteView != null) mDeleteView.showErrorMessage(throwable.getMessage());
+                            });
     }
 }

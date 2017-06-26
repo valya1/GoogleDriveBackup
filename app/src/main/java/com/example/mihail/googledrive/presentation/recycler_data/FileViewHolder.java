@@ -7,11 +7,11 @@ import android.widget.TextView;
 import com.example.mihail.googledrive.R;
 
 
-public class FileViewHolder extends RecyclerView.ViewHolder {
+class FileViewHolder extends RecyclerView.ViewHolder {
 
-   public final TextView mFileName;
+    final TextView mFileName;
 
-    public FileViewHolder(View itemView) {
+     FileViewHolder(View itemView) {
         super(itemView);
         mFileName = (TextView) itemView.findViewById(R.id.tvFileName);
     }

@@ -25,13 +25,13 @@ public class DriveRepository implements IDriveRepository {
     @Override
     @NonNull
     public Completable uploadFile(FileToUpload fileToUpload) {
-        return Completable.fromCallable(() ->
+        return Completable.fromAction(() ->
         {
             InputStream inputStream = fileToUpload.getFileInputStream();
             OutputStream outputStream = mGoogleDriveManager.getOutputStream();
             buffer(inputStream,outputStream);
             outputStream.close();
-            return mGoogleDriveManager.saveToDrive(fileToUpload.getTitle());
+            mGoogleDriveManager.saveToDrive(fileToUpload.getTitle());
         });
     }
 
@@ -53,7 +53,7 @@ public class DriveRepository implements IDriveRepository {
     @Override
     @NonNull
     public Completable deleteFile(String fileName) {
-        return Completable.fromCallable(() -> mGoogleDriveManager.deleteFile(fileName));
+        return Completable.fromAction(() -> mGoogleDriveManager.deleteFile(fileName));
     }
 
     @Override
