@@ -68,7 +68,7 @@ public class MainPresenter implements MainContract.Presenter
         mUploadInteractor.uploadFile(uri)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
-                            if (mMainView != null) mMainView.showSuccessMessage("File was successfully uploaded");
+                            if (mMainView != null) mMainView.showSuccessMessage("File backup success");
                         }
                 , throwable -> {
                             if (mMainView != null) mMainView.showErrorMessage(throwable.getMessage());

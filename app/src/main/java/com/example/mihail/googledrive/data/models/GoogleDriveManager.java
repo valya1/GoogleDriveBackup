@@ -13,6 +13,7 @@ import com.google.android.gms.drive.DriveStatusCodes;
 import com.google.android.gms.drive.Metadata;
 import com.google.android.gms.drive.MetadataBuffer;
 import com.google.android.gms.drive.MetadataChangeSet;
+
 import com.google.android.gms.drive.query.Filters;
 import com.google.android.gms.drive.query.Query;
 import com.google.android.gms.drive.query.SearchableField;
@@ -30,6 +31,7 @@ public class GoogleDriveManager {
     public GoogleDriveManager(GoogleApiClient googleApiClient) {
         this.mGoogleApiClient = googleApiClient;
     }
+
 
     public void deleteFile(String fileName){
         DriveApi.MetadataBufferResult result = getMetadataBufferResult(fileName);
@@ -52,8 +54,7 @@ public class GoogleDriveManager {
             mDriveContents = contentsResult.getDriveContents();
             return contentsResult.getDriveContents().getOutputStream();
         }
-        else
-            throw new RuntimeException(contentsResult.getStatus().getStatusMessage());
+        throw new RuntimeException(contentsResult.getStatus().getStatusMessage());
     }
 
     public void saveToDrive(String fileName){
@@ -70,7 +71,6 @@ public class GoogleDriveManager {
                     .createFile(mGoogleApiClient, changeSet, mDriveContents)
                     .await()
                     .getStatus();
-
             if (!status.isSuccess())
                 throw new RuntimeException(status.getStatusMessage());
         }
@@ -91,10 +91,8 @@ public class GoogleDriveManager {
                     .await();
             if(contentsResult.getStatus().isSuccess())
                 return contentsResult.getDriveContents().getInputStream();
-            else
-                throw new RuntimeException(contentsResult.getStatus().getStatusMessage());
+            throw new RuntimeException(contentsResult.getStatus().getStatusMessage());
         }
-        else
             throw new RuntimeException(result.getStatus().getStatusMessage());
     }
 
@@ -119,12 +117,9 @@ public class GoogleDriveManager {
                 buffer.release();
                 return list;
             }
-            else
-                throw new RuntimeException(result.getStatus().getStatusMessage());
+            throw new RuntimeException(result.getStatus().getStatusMessage());
         }
-        else
-            throw new RuntimeException(status.getStatusMessage());
-
+        throw new RuntimeException(status.getStatusMessage());
     }
 
     @NonNull
