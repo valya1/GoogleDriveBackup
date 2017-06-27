@@ -12,10 +12,10 @@ public class DeletePresenter implements DeleteContract.Presenter {
     private IFileAdapterModel mFileAdapterModel;
     private DeleteContract.View mDeleteView;
 
-    public DeletePresenter(IDeleteInteractor iDeleteInteractor, IFileAdapterModel iFileAdapterModel)
+    public DeletePresenter(IDeleteInteractor deleteInteractor, IFileAdapterModel fileAdapterModel)
     {
-        this.mDeleteInteractor = iDeleteInteractor;
-        this.mFileAdapterModel = iFileAdapterModel;
+        this.mDeleteInteractor = deleteInteractor;
+        this.mFileAdapterModel = fileAdapterModel;
     }
     @Override
     public void bindView(DeleteContract.View iDeleteView) {

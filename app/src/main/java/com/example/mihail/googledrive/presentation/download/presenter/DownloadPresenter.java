@@ -13,10 +13,10 @@ public class DownloadPresenter implements DownloadContract.Presenter {
     private IDownloadInteractor mDownloadInteractor;
     private IFileAdapterModel mFileAdapterModel;
 
-    public DownloadPresenter(DownloadInteractor iDownloadInteractor, IFileAdapterModel iFileAdapterModel)
+    public DownloadPresenter(DownloadInteractor downloadInteractor, IFileAdapterModel fileAdapterModel)
     {
-        this.mDownloadInteractor = iDownloadInteractor;
-        this.mFileAdapterModel = iFileAdapterModel;
+        this.mDownloadInteractor = downloadInteractor;
+        this.mFileAdapterModel = fileAdapterModel;
     }
 
     @Override

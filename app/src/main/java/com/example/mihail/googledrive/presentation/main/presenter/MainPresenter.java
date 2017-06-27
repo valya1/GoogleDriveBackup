@@ -16,9 +16,9 @@ public class MainPresenter implements MainContract.Presenter
     private MainContract.View mMainView;
     private IUploadInteractor mUploadInteractor;
 
-    public MainPresenter(IUploadInteractor iUploadInteractor)
+    public MainPresenter(IUploadInteractor uploadInteractor)
     {
-        this.mUploadInteractor = iUploadInteractor;
+        this.mUploadInteractor = uploadInteractor;
     }
 
     @Override
