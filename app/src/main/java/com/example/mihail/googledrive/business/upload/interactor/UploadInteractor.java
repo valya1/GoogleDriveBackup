@@ -36,6 +36,7 @@ public class UploadInteractor implements IUploadInteractor {
     }
 
     private String getTitleFromUri(Uri uri) {
+
         String result = null;
         if (uri.getScheme().equals("content")) {
             Cursor cursor = mContentResolver.query(uri, null, null, null, null);

@@ -1,6 +1,7 @@
 package com.example.mihail.googledrive.business.download.interactor;
 
 import com.example.mihail.googledrive.data.repository.IDriveRepository;
+
 import java.io.File;
 import java.util.List;
 
@@ -12,9 +13,8 @@ public class DownloadInteractor implements IDownloadInteractor {
 
     private IDriveRepository mDriveRepository;
 
-    public DownloadInteractor(IDriveRepository driveRepository)
-    {
-        this.mDriveRepository = driveRepository;
+    public DownloadInteractor(IDriveRepository driveRepository) {
+        mDriveRepository = driveRepository;
     }
 
     @Override

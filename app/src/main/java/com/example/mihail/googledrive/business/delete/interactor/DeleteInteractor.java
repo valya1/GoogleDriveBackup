@@ -18,7 +18,6 @@ public class DeleteInteractor implements IDeleteInteractor {
         this.mDriveRepository = driveRepository;
     }
 
-
     @Override
     public Single<List<String>> getFilesList() {
         return mDriveRepository.getFilesList()

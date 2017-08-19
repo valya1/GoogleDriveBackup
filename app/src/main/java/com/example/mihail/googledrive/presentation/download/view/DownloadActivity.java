@@ -7,7 +7,6 @@ import android.support.v7.widget.RecyclerView;
 
 import com.example.mihail.googledrive.BaseActivity;
 import com.example.mihail.googledrive.R;
-
 import com.example.mihail.googledrive.business.download.interactor.DownloadInteractor;
 import com.example.mihail.googledrive.data.models.GoogleDriveManager;
 import com.example.mihail.googledrive.data.repository.DriveRepository;
@@ -21,6 +20,10 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.V
     private IFileAdapterView mFileAdapterView;
 
     private  DownloadContract.Presenter mDownloadPresenter;
+
+    public DownloadActivity(DownloadContract.Presenter downloadPresenter) {
+        this.mDownloadPresenter = downloadPresenter;
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)

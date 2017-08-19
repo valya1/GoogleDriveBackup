@@ -1,6 +1,5 @@
 package com.example.mihail.googledrive.presentation.download.presenter;
 
-import com.example.mihail.googledrive.business.download.interactor.DownloadInteractor;
 import com.example.mihail.googledrive.business.download.interactor.IDownloadInteractor;
 import com.example.mihail.googledrive.presentation.download.DownloadContract;
 import com.example.mihail.googledrive.presentation.recycler_data.model.IFileAdapterModel;
@@ -13,7 +12,7 @@ public class DownloadPresenter implements DownloadContract.Presenter {
     private IDownloadInteractor mDownloadInteractor;
     private IFileAdapterModel mFileAdapterModel;
 
-    public DownloadPresenter(DownloadInteractor downloadInteractor, IFileAdapterModel fileAdapterModel)
+    public DownloadPresenter(IDownloadInteractor downloadInteractor, IFileAdapterModel fileAdapterModel)
     {
         this.mDownloadInteractor = downloadInteractor;
         this.mFileAdapterModel = fileAdapterModel;

@@ -1,15 +1,16 @@
 package com.example.mihail.googledrive.presentation.recycler_data;
+
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.example.mihail.googledrive.R;
 import com.example.mihail.googledrive.presentation.recycler_data.model.IFileAdapterModel;
 import com.example.mihail.googledrive.presentation.recycler_data.view.IFileAdapterView;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class FilesAdapter extends RecyclerView.Adapter<FileViewHolder> implements IFileAdapterModel, IFileAdapterView {
 
