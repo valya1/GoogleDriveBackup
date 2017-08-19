@@ -1,0 +1,54 @@
+@startuml
+
+'abstract class AbstractList
+'abstract AbstractCollection
+'interface List
+'interface Collection
+'
+'List <|-- AbstractList
+'Collection <|-- AbstractCollection
+'
+'Collection <|- List
+'AbstractCollection <|- AbstractList
+'AbstractList <|-- ArrayList
+'
+'class ArrayList {
+'Object[] elementData
+'size()
+'}
+
+
+
+
+interface IFileAdapterView{
+    void refresh();
+}
+interface IFileAdapterModel{
+  void add(String fileName);
+    void update(List<String> fileNames);
+    String remove(int position);
+    String getFileName(int position);
+    int getSize();
+}
+abstract class RecyclerView.Adapter<FileViewHolder>
+abstract class RecyclerView.ViewHolder
+class FileViewHolder extends RecyclerView.ViewHolder{
+    final TextView fileName;
+
+}
+class FilesAdapter extends RecyclerView.Adapter{
+    void refresh();
+  void add(String fileName);
+    void update(List<String> fileNames);
+    String remove(int position);
+    String getFileName(int position);
+    int getSize();
+
+}
+
+IFileAdapterView<|--FilesAdapter
+IFileAdapterModel<|--FilesAdapter
+
+
+
+@enduml

@@ -18,10 +18,9 @@ import com.google.android.gms.drive.Drive;
 public class BaseActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,
         GoogleApiClient.ConnectionCallbacks, BaseContract.View {
 
+    public static final String TAG = "BaseActivity";
     private static final int REQUEST_CODE_RESOLUTION = 1;
     private GoogleApiClient mGoogleApiClient;
-
-    public static final String TAG = "BaseActivity";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,12 +40,10 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     protected void onStart() {
         super.onStart();
-        Log.i(TAG, "Start");
     }
 
     @Override
     protected void onResume() {
-        Log.i(TAG,"Resume");
         super.onResume();
         mGoogleApiClient.connect();
     }
@@ -54,7 +51,6 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     protected void onPause() {
         super.onPause();
-        Log.i(TAG,"Pause");
         if(mGoogleApiClient !=null)
             mGoogleApiClient.disconnect();
     }
@@ -62,23 +58,19 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     protected void onStop() {
         super.onStop();
-        Log.i(TAG, "Stop");
     }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        Log.i(TAG, "Api client was connected");
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-        Log.i(TAG, "GoogleApiClient connection suspended");
 
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult result) {
-        Log.i(TAG, "GoogleApiClient connection failed: " + result.toString());
         if (!result.hasResolution()) {
             GoogleApiAvailability.getInstance().getErrorDialog(this, result.getErrorCode(), 0).show();
             return;
@@ -86,7 +78,6 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.O
         try {
             result.startResolutionForResult(this, REQUEST_CODE_RESOLUTION);
         } catch (IntentSender.SendIntentException e) {
-            Log.e(TAG, "Exception while starting resolution activity", e);
         }
     }
 
